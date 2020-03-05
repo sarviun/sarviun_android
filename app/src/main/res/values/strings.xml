@@ -1,0 +1,19 @@
+<resources>
+    <string name="app_name">Sarviun</string>
+    <string name="hint_type_to_search">Zadejte místo</string>
+    <string name="type_parcela_definicni_bod">Parcela/Definiční bod</string>
+    <string name="type_adresni_misto">Adresní místo</string>
+    <string name="type_ulice">Ulice</string>
+    <string name="type_zakladni_sidelni_jednotka">Základní sídelní jednotka</string>
+    <string name="type_katastralni_uzemi">Katastrální území</string>
+    <string name="type_mo_praha">Městský obvod/Městská část ve statutárním městě a hlavním městě Praze</string>
+    <string name="type_so_praha">Správní obvod v hlavním městě Praze</string>
+    <string name="type_cast_obce">Část obce</string>
+    <string name="type_obec">Obec</string>
+    <string name="type_obec_po">Obec s pověřeným obecním úřadem</string>
+    <string name="type_obec_rp">Obec s rozšířenou působností</string>
+    <string name="type_okres">Okres</string>
+    <string name="type_vyssi_celek">Vyšší územně samosprávný celek</string>
+    <string name="type_unknown">Neznámý typ</string>
+    <string name="navigate">Navigovat</string>
+</resources>
