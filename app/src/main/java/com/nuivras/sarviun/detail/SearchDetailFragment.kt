@@ -25,6 +25,13 @@ class SearchDetailFragment : Fragment() {
     lateinit var coordinates : String
     lateinit var mapIntent : Intent
 
+    /**
+     * Lazily initialize our [SearchDetailViewModel].
+     */
+    private val viewModel: SearchDetailViewModel by lazy {
+        ViewModelProviders.of(this).get(SearchDetailViewModel::class.java)
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -112,6 +119,11 @@ class SearchDetailFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.getDetails()
     }
 
 }

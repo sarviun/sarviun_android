@@ -67,7 +67,7 @@ class SearchFragment : Fragment() {
         // Observe the navigateToSelectedProperty LiveData and Navigate when it isn't null
         // After navigating, call displayPropertyDetailsComplete() so that the ViewModel is ready
         // for another navigation event.
-        viewModel.navigateToSelectedProperty.observe(this, Observer {
+        viewModel.navigateToSelectedProperty.observe(viewLifecycleOwner, Observer {
             if ( null != it && sharedElement != null) {
 
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -86,7 +86,7 @@ class SearchFragment : Fragment() {
             }
         })
 
-        viewModel.properties.observe(this, Observer {
+        viewModel.properties.observe(viewLifecycleOwner, Observer {
                 if (it.isEmpty() && query.isNotEmpty())
                     binding.notFoundLayout.visibility = View.VISIBLE
                 else

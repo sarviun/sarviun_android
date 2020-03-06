@@ -25,7 +25,15 @@
         android:paddingRight="16dp"
         android:theme="@style/ThemeOverlay.Sarviun.BottomSheet">
 
-                <TextView
+    <TextView
+            android:id="@+id/textView12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@{viewModel.firstIdentify.attributes.pripojeniNaKanalizacniSit}"
+            app:layout_constraintEnd_toEndOf="@+id/katastrButton"
+            app:layout_constraintTop_toBottomOf="@+id/katastrButton" />
+
+    <TextView
                         android:id="@+id/textView14"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
