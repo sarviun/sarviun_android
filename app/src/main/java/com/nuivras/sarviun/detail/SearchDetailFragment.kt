@@ -12,11 +12,15 @@ import androidx.fragment.app.Fragment
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
+import androidx.lifecycle.Observer
 import com.nuivras.sarviun.R
 import com.nuivras.sarviun.databinding.FragmentSearchDetailBinding
 import com.nuivras.sarviun.network.Type
 import kotlinx.android.synthetic.main.bottom_sheet_search_detail.view.*
 import kotlinx.android.synthetic.main.fragment_search.view.*
+import kotlinx.android.synthetic.main.fragment_search_detail.*
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.math.roundToInt
 
 
@@ -70,6 +74,15 @@ class SearchDetailFragment : Fragment() {
             this, viewModelFactory).get(SearchDetailViewModel::class.java)
 
 
+
+        //jakmile se naplni prekonvertovany shape s parcelou
+        viewModel.coordinates.observe(viewLifecycleOwner, Observer {
+            if (!it.isEmpty())
+                showObjectPolygon(it)
+        })
+
+
+
         //enables javascript in webview
         binding.webView.settings.javaScriptEnabled = true
 
@@ -119,6 +132,12 @@ class SearchDetailFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    private fun showObjectPolygon(it: ArrayList<DoubleArray>) {
+        val array = arrayOfNulls<DoubleArray>(it.size)
+        it.toArray(array)
+        webView.loadUrl("javascript:showPolygon(" + array.contentDeepToString() + ") ")
     }
 
     override fun onResume() {

@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Sarviun</string>
     <string name="hint_type_to_search">Zadejte místo</string>
-    <string name="type_parcela_definicni_bod">Parcela/Definiční bod</string>
+    <string name="type_parcela_definicni_bod">Definiční bod parcely</string>
     <string name="type_adresni_misto">Adresní místo</string>
     <string name="type_ulice">Ulice</string>
     <string name="type_zakladni_sidelni_jednotka">Základní sídelní jednotka</string>
@@ -16,4 +16,35 @@
     <string name="type_vyssi_celek">Vyšší územně samosprávný celek</string>
     <string name="type_unknown">Neznámý typ</string>
     <string name="navigate">Navigovat</string>
+
+    <string name="kod_stavebniho_objektu">Kód stavebního objektu</string>
+    <string name="seznam_cisel_domovnich">Seznam čísel domovních</string>
+    <string name="identifikacni_parcela">Identifikační parcela</string>
+    <string name="typ_stavebniho_objektu">Typ stavebního objektu</string>
+    <string name="zpusob_vyuziti">Způsob využití</string>
+    <string name="nadrazena_cast_obce">Nadřazená část obce</string>
+    <string name="nadrazeny_momc">Nadřazený městský obvod/městská část</string>
+    <string name="zacatek_platnosti">Začátek platnosti</string>
+    <string name="konec_platnosti">Konec platnosti</string>
+    <string name="id_transakce_RUIAN">ID transakce v RÚIAN</string>
+    <string name="id_navrhu_zmeny_ISUI">ID návrhu změny v ISÚI</string>
+    <string name="id_budovy_ISKN">ID budovy v ISKN</string>
+    <string name="datum_dokonceni_stavebniho_objektu">Datum dokončení stavebního objektu</string>
+    <string name="druh_svisle_nosne_konstrukce">Druh svislé nosné konstrukce</string>
+    <string name="obestaveny_prostor_m3">Obestavěný prostor v m³</string>
+    <string name="pocet_bytu">Počet bytů u stavebního objektu s byty</string>
+    <string name="pocet_podlazi">Počet nadzemních a podzemních podlaží</string>
+    <string name="podlahova_plocha_m2">Podlahová plocha v m²</string>
+    <string name="pripojeni_kanalizacni_sit">Připojení na kanalizační síť</string>
+    <string name="pripojeni_plyn">Připojení na rozvod plynu</string>
+    <string name="pripojeni_vodovod">Připojení na vodovod</string>
+    <string name="vytah">Vybavení výtahem</string>
+    <string name="zastavena_plocha_m2">Zastavěná plocha v m²</string>
+    <string name="zpusob_vytapeni">Způsob vytápění</string>
+    <string name="zdroj_geomatrie">Zdroj geometrie</string>
+    <string name="shape">Tvar</string>
+    <string name="st_area_shape">st_area(shape)</string>
+    <string name="st_length_shape">st_length(shape)</string>
+    
+
 </resources>

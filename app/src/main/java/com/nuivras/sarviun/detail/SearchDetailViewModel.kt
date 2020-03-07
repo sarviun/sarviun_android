@@ -9,6 +9,8 @@ import com.nuivras.sarviun.network.LocationGeneral
 import com.nuivras.sarviun.network.RUIANApi
 import com.nuivras.sarviun.network.identify.Result
 import com.nuivras.sarviun.search.RUIANApiStatus
+import com.nuivras.sarviun.utils.CoordinatesConvertor
+import com.nuivras.sarviun.utils.Utils
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -18,6 +20,7 @@ import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
 
 
@@ -46,6 +49,14 @@ class SearchDetailViewModel (locationProperty: LocationGeneral, app: Application
     // The external LiveData interface to the property is immutable, so only this class can modify
     val firstIdentify: LiveData<Result>
         get() = _firstIdentify
+
+    // Internally, we use a MutableLiveData, because we will be updating the List of MarsProperty
+    // with new values
+    private val _coordinates = MutableLiveData<ArrayList<DoubleArray>>()
+
+    // The external LiveData interface to the property is immutable, so only this class can modify
+    val coordinates: LiveData<ArrayList<DoubleArray>>
+        get() = _coordinates
 
 
     private val _selectedProperty = MutableLiveData<LocationGeneral>()
@@ -76,7 +87,12 @@ class SearchDetailViewModel (locationProperty: LocationGeneral, app: Application
                 _status.value = RUIANApiStatus.DONE
                 _propertiesIdentify.value = listResult.results
                 _firstIdentify.value = propertiesIdentify.value?.get(0)
+
+
+                transformShape(_firstIdentify.value?.geometry?.rings?.get(0)!!)
+
             } catch (e: Exception) {
+                //TODO: nepodarilo se stahnout tvar parcely nebo tak neco
                 //if viewmodeljob is canceled in updateLocationResult,
                 //exception is raising, need to filter the reason of the exception
                 if (_status.value != RUIANApiStatus.RESTARTED) {
@@ -87,9 +103,21 @@ class SearchDetailViewModel (locationProperty: LocationGeneral, app: Application
         }
     }
 
+    private fun transformShape(listOfPoints: List<Any>) {
+        val transformedCoordinates = arrayListOf<DoubleArray>()
+        for (point in listOfPoints) {
+            if (point is List<*>) {
+                val pointInDouble: List<Double> = point.filterIsInstance<Double>()
+                transformedCoordinates.add(CoordinatesConvertor.JTSKtoWGS(pointInDouble[1].absoluteValue, pointInDouble[0].absoluteValue, 245.0))
+            }
+        }
+
+        _coordinates.value = transformedCoordinates
+    }
+
     fun getDetails () {
         val locale = Locale("en", "UK")
-        val pattern = "###.##"
+        val pattern = "#.##"
 
         val df =
             NumberFormat.getNumberInstance(locale) as DecimalFormat
@@ -98,8 +126,15 @@ class SearchDetailViewModel (locationProperty: LocationGeneral, app: Application
 
 
 
-        val geometry = _selectedProperty.value?.feature?.geometry?.x?.roundToInt().toString() + "," + _selectedProperty.value?.feature?.geometry?.y?.roundToInt().toString()
-        val mapExtent = df.format(_selectedProperty.value?.feature?.attributes?.xmin).toString() + "," + df.format(_selectedProperty.value?.feature?.attributes?.ymin).toString() + "," + df.format(_selectedProperty.value?.feature?.attributes?.xmax).toString() + "," + df.format(_selectedProperty.value?.feature?.attributes?.ymax).toString()
+
+        val geometry = df.format(_selectedProperty.value?.feature?.geometry?.x).toString() +
+                "," + df.format(_selectedProperty.value?.feature?.geometry?.y).toString()
+
+        val mapExtent = _selectedProperty.value?.feature?.attributes?.xmin.toString() +
+                "," + _selectedProperty.value?.feature?.attributes?.ymin.toString() +
+                "," + _selectedProperty.value?.feature?.attributes?.xmax.toString() +
+                "," + _selectedProperty.value?.feature?.attributes?.ymax.toString()
+
         identify(geometry, mapExtent)
     }
 

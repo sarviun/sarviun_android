@@ -27,8 +27,10 @@ interface RUIANService {
     @GET("identify")
     suspend fun identify(@Query("geometry") geometry: String,
                          @Query("mapExtent") mapExtent: String,
+                         @Query("returnGeometry") returnGeometry: String = "true",
+                         @Query("layers") layers: String = "visible:3",
                          @Query("imageDisplay") imageDisplay: String = "600,550,96",
-                         @Query("tolerance") tolerance: String = "3000",
+                         @Query("tolerance") tolerance: String = "5000",
                          @Query("geometryType") geometryType: String = "esriGeometryPoint",
                          @Query("f") f: String = "pjson"): IdentifyResponse
 
