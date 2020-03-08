@@ -26,7 +26,7 @@
                     android:layout_height="72dp" app:srcCompat="@drawable/ic_place_white_24dp"
                     android:id="@+id/imageView4"/>
             <TextView
-                    android:text='Zadejte hledané místo, např.: "Mokropsy"'
+                    android:text="@string/type_to_search"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:gravity="center"
@@ -43,7 +43,7 @@
                     android:layout_height="wrap_content" app:srcCompat="@mipmap/ic_launcher"
                     android:id="@+id/imageView3"/>
             <TextView
-                    android:text="V RUIAN nebyl nalezen žádný objekt."
+                    android:text="@string/no_RUIAN_item_found"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:id="@+id/textView37"/>
         </LinearLayout>

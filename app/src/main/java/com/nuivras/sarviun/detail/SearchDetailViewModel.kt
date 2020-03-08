@@ -86,13 +86,13 @@ class SearchDetailViewModel (locationProperty: LocationGeneral, app: Application
                     .identify(geometry, mapExtent)
                 _status.value = RUIANApiStatus.DONE
                 _propertiesIdentify.value = listResult.results
-                _firstIdentify.value = propertiesIdentify.value?.get(0)
 
-
-                transformShape(_firstIdentify.value?.geometry?.rings?.get(0)!!)
+                if (listResult.results.isNotEmpty()) {
+                    _firstIdentify.value = _propertiesIdentify.value?.get(0)
+                    transformShape(_firstIdentify.value?.geometry?.rings?.get(0)!!)
+                }
 
             } catch (e: Exception) {
-                //TODO: nepodarilo se stahnout tvar parcely nebo tak neco
                 //if viewmodeljob is canceled in updateLocationResult,
                 //exception is raising, need to filter the reason of the exception
                 if (_status.value != RUIANApiStatus.RESTARTED) {

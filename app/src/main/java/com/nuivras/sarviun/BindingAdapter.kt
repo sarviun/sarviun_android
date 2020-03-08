@@ -1,8 +1,11 @@
 package com.nuivras.sarviun
 
+import android.view.View
+import androidx.core.widget.NestedScrollView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.nuivras.sarviun.network.LocationGeneral
+import com.nuivras.sarviun.search.RUIANApiStatus
 import com.nuivras.sarviun.search.ResultListAdapter
 
 /**
@@ -13,3 +16,27 @@ fun bindRecyclerView(recyclerView: RecyclerView, data: List<LocationGeneral>?) {
     val adapter = recyclerView.adapter as ResultListAdapter
     adapter.submitList(data)
 }
+
+///**
+// * This binding adapter displays the [MarsApiStatus] of the network request in an image view.  When
+// * the request is loading, it displays a loading_animation.  If the request has an error, it
+// * displays a broken image to reflect the connection error.  When the request is finished, it
+// * hides the image view.
+// */
+//@BindingAdapter("StavebniObjektVisibility")
+//fun bindStatus(statusImageView: NestedScrollView, status: RUIANApiStatus?) {
+//    when (status) {
+////        RUIANApiStatus.LOADING -> {
+////            statusImageView.visibility = View.VISIBLE
+////            statusImageView.setImageResource(R.drawable.loading_animation)
+////        }
+//        RUIANApiStatus.ERROR -> {
+//            statusImageView.visibility = View.GONE
+//        }
+//        RUIANApiStatus.DONE -> {
+//            statusImageView.visibility = View.VISIBLE
+//        }
+//    }
+//}
+
+

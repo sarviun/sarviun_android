@@ -1,5 +1,6 @@
 package com.nuivras.sarviun.detail
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.ResolveInfo
 import android.net.Uri
@@ -12,6 +13,7 @@ import androidx.fragment.app.Fragment
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.lifecycle.Observer
 import com.nuivras.sarviun.R
 import com.nuivras.sarviun.databinding.FragmentSearchDetailBinding
@@ -74,10 +76,22 @@ class SearchDetailFragment : Fragment() {
             this, viewModelFactory).get(SearchDetailViewModel::class.java)
 
 
+        //jestli se nic nestahlo, schovej je, pripadne se prida vysvetleni
+        viewModel.propertiesIdentify.observe(viewLifecycleOwner, Observer {
+            if (it.isNotEmpty()) {
+                binding.coordinateBottomSheet.detail_info_nested_scroll_view.visibility = View.VISIBLE
+            }
+            else {
+                binding.coordinateBottomSheet.detail_info_nested_scroll_view.visibility = View.GONE
+                if (viewModel.selectedProperty.value?.feature?.attributes?.typeTranslated == Type.ADRESNI_MISTO) {
+                    binding.coordinateBottomSheet.stavebni_objekt_not_found_layout.visibility = View.VISIBLE
+                }
+            }
+        })
 
-        //jakmile se naplni prekonvertovany shape s parcelou
+        //data stazena, jakmile se naplni prekonvertovany shape s parcelou, zobraz polygon v mape
         viewModel.coordinates.observe(viewLifecycleOwner, Observer {
-            if (!it.isEmpty())
+            if (it.isNotEmpty())
                 showObjectPolygon(it)
         })
 
@@ -129,6 +143,20 @@ class SearchDetailFragment : Fragment() {
             if (intent.resolveActivity(activity!!.packageManager) != null) {
                 startActivity(intent)
             }
+        }
+
+        binding.coordinateBottomSheet.emptyDetailButtonExplanation.setOnClickListener {
+            //Inflate the dialog with custom view
+            val mDialogView = layoutInflater.inflate(R.layout.dialog_explanation_adrress_place, null)
+            //AlertDialogBuilder
+            val mBuilder = AlertDialog.Builder(context!!)
+                .setView(mDialogView)
+                .setTitle(getString(R.string.title_explanation_dialog))
+                .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                    dialog.dismiss()
+                }
+            //show dialog
+            mBuilder.show()
         }
 
         return binding.root
