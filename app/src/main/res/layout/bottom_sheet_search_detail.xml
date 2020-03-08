@@ -13,7 +13,7 @@
 
 <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="400dp"
+        android:layout_height="wrap_content"
         app:behavior_hideable="false"
         app:behavior_peekHeight="56dp"
         app:layout_behavior="@string/bottom_sheet_behavior"
@@ -28,6 +28,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
+            android:layout_marginTop="48dp"
+            android:layout_marginBottom="48dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -49,7 +51,7 @@
 
     <androidx.core.widget.NestedScrollView
             android:layout_width="0dp"
-            android:layout_height="0dp"
+            android:layout_height="290dp"
             android:fillViewport="true"
             android:id="@+id/detail_info_nested_scroll_view"
             app:layout_constraintBottom_toBottomOf="parent"

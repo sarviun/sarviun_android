@@ -51,7 +51,6 @@
     <string name="type_to_search">Zadejte hledané místo</string>
     <string name="adresni_misto_mimo_stavebni_objekt">Adresní místo se nenachází uvnitř stavebního objektu.</string>
     <string name="title_explanation_dialog">Proč nevidím informace o stavbě?</string>
-    <string name="vysvetleni_adresa_mimo_objekt">Dle pozorování není adresní místo umístěno vždy v oblasti stavebního objektu, jak je zobrazeno na následujícím příkladu. Adresní místo 2660 značeno červeným bodem se nenachází uvnitř stavebního objektu zvýrazněného červenou čarou, proto není možné zatím zjistit informace o objektu.</string>
-
+    <string name="vysvetleni_adresa_mimo_objekt">Dle pozorování není adresní místo umístěno vždy v oblasti stavebního objektu, jak je zobrazeno na následujícím příkladu. Adresní místo 2660 značeno červeným bodem se nenachází uvnitř stavebního objektu ohraničeného červenou čarou, proto není možné zatím zjistit informace o objektu.</string>
 
 </resources>
