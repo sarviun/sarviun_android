@@ -49,8 +49,22 @@
     <string name="button_jak_je_toto_mozne">Jak je toto možné?</string>
     <string name="no_RUIAN_item_found">V RÚIAN nebyl nalezen žádný objekt.</string>
     <string name="type_to_search">Zadejte hledané místo</string>
-    <string name="adresni_misto_mimo_stavebni_objekt">Adresní místo se nenachází uvnitř stavebního objektu.</string>
+    <string name="adresni_misto_mimo_stavebni_objekt">Adresní místo se nenachází uvnitř stavebního objektu. Proto jsou zobrazeny informace o parcele.</string>
     <string name="title_explanation_dialog">Proč nevidím informace o stavbě?</string>
     <string name="vysvetleni_adresa_mimo_objekt">Dle pozorování není adresní místo umístěno vždy v oblasti stavebního objektu, jak je zobrazeno na následujícím příkladu. Adresní místo 2660 značeno červeným bodem se nenachází uvnitř stavebního objektu ohraničeného červenou čarou, proto není možné zatím zjistit informace o objektu.</string>
+    <string name="stavebni_objekt">Stavební objekt</string>
+    <string name="parcela">Parcela</string>
+    <string name="about_stavebni_objekt">Informace o stavebním objektu</string>
+    <string name="about_parcela">Informace o parcele</string>
+    <string name="jednoznacny_identifikator_parcely">Jednoznačný identifikátor parcely</string>
+    <string name="kmenove_parcelni_cislo">Kmenové parcelní číslo</string>
+    <string name="poddeleni_cisla_parcely">Poddělení čísla parcely</string>
+    <string name="vymera_parcely">Výměra parcely</string>
+    <string name="zpusob_vyuziti_pozemku">Způsob využití pozemku</string>
+    <string name="rozliseni_druhu_cislovani_parcely">Rozlišení druhu číslování parcely</string>
+    <string name="kod_druhu_pozemku">Kód druhu pozemku</string>
+    <string name="nadrazene_katastralni_uzemi">Nadřazené katastrální území</string>
+    <string name="id_rizeni_iskn">ID řízení v ISKN</string>
+    <string name="cislo_parcely">Číslo parcely</string>
 
 </resources>

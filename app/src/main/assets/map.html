@@ -28,16 +28,18 @@
 </div>
 <script type="text/javascript">
 var map = L.map('map', {zoomControl: false});
+var polygon;
 
 L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
     attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a> contributors, <a href="https://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
     id: 'mapbox/streets-v11',
+    maxZoom: 24,
     accessToken: 'pk.eyJ1Ijoic2FycGl1biIsImEiOiJjazY0em1mMGMweXhpM2tvNDI3N3hzb2V1In0.thHFQTs4iLSzYYY97h3oaw'
 }).addTo(map);
 
 
 function centerToArea(xmin, ymin, xmax, ymax, isAddress) {
-    var polygon = L.polygon([
+    polygon = L.polygon([
         [ymin, xmin],
         [ymin, xmax],
         [ymax, xmax],
@@ -54,6 +56,7 @@ function centerToArea(xmin, ymin, xmax, ymax, isAddress) {
 }
 
 function showPolygon(list) {
+    map.removeLayer(polygon);
     var polygonParcel = L.polygon(list);
 
     polygonParcel.addTo(map);

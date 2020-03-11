@@ -58,21 +58,23 @@ data class Attributes(
 
 }
 
-enum class Type (val resourceString: Int) {
+enum class Type (val resourceString: Int, val layerId: Int) {
 
-    PARCELA_DEFINICNI_BOD(R.string.type_parcela_definicni_bod),
-    ADRESNI_MISTO(R.string.type_adresni_misto),
-    ULICE(R.string.type_ulice),
-    ZAKLADNI_SIDELNI_JEDNOTKA(R.string.type_zakladni_sidelni_jednotka),
-    KATASTRALNI_UZEMI(R.string.type_katastralni_uzemi),
-    MESTSKY_OBVOD_MESTSKA_CAST(R.string.type_mo_praha),
-    SPRAVNI_OBVOD_PRAHA(R.string.type_so_praha),
-    CAST_OBCE(R.string.type_cast_obce),
-    OBEC(R.string.type_obec),
-    OBEC_SPOU(R.string.type_obec_po),
-    OBEC_SROP(R.string.type_obec_rp),
-    OKRES(R.string.type_okres),
-    VYSSI_CELEK(R.string.type_vyssi_celek),
-    NEZNAMY(R.string.type_unknown)
+    PARCELA_DEFINICNI_BOD(R.string.type_parcela_definicni_bod, 0),
+    ADRESNI_MISTO(R.string.type_adresni_misto, 1),
+    STAVEBNI_OBJEKT(R.string.stavebni_objekt, 3),
+    ULICE(R.string.type_ulice, 4),
+    PARCELA(R.string.parcela, 5),
+    ZAKLADNI_SIDELNI_JEDNOTKA(R.string.type_zakladni_sidelni_jednotka, 6),
+    KATASTRALNI_UZEMI(R.string.type_katastralni_uzemi, 7),
+    MESTSKY_OBVOD_MESTSKA_CAST(R.string.type_mo_praha, 8),
+    SPRAVNI_OBVOD_PRAHA(R.string.type_so_praha, 10),
+    CAST_OBCE(R.string.type_cast_obce, 11),
+    OBEC(R.string.type_obec, 12),
+    OBEC_SPOU(R.string.type_obec_po, 13),
+    OBEC_SROP(R.string.type_obec_rp, 14),
+    OKRES(R.string.type_okres, 15),
+    VYSSI_CELEK(R.string.type_vyssi_celek, 17),
+    NEZNAMY(R.string.type_unknown, -1)
 }
 

@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.nuivras.sarviun.network.LocationGeneral
 import com.nuivras.sarviun.network.RUIANApi
+import com.nuivras.sarviun.network.Type
 import com.nuivras.sarviun.network.identify.Result
 import com.nuivras.sarviun.search.RUIANApiStatus
 import com.nuivras.sarviun.utils.CoordinatesConvertor
@@ -83,10 +84,11 @@ class SearchDetailViewModel (locationProperty: LocationGeneral, app: Application
                 _status.value = RUIANApiStatus.LOADING
                 // this will run on a thread managed by Retrofit
                 val listResult = RUIANApi.retrofitService
-                    .identify(geometry, mapExtent)
+                    .identify(geometry, mapExtent, getLayerTypes())
                 _status.value = RUIANApiStatus.DONE
                 _propertiesIdentify.value = listResult.results
 
+                //TODO: radeji observe na _propertiesIdentify?
                 if (listResult.results.isNotEmpty()) {
                     _firstIdentify.value = _propertiesIdentify.value?.get(0)
                     transformShape(_firstIdentify.value?.geometry?.rings?.get(0)!!)
@@ -101,6 +103,27 @@ class SearchDetailViewModel (locationProperty: LocationGeneral, app: Application
                 }
             }
         }
+    }
+
+    //TODO: cisla nahradit Type.layerId
+    private fun getLayerTypes(): String {
+        val number = when (_selectedProperty.value?.feature?.attributes?.typeTranslated) {
+            Type.PARCELA_DEFINICNI_BOD -> "5" //stavebni objekt, parcela
+            Type.ADRESNI_MISTO -> "3,5" //stavebni objekt, parcela
+            Type.ULICE -> "4"
+            Type.ZAKLADNI_SIDELNI_JEDNOTKA -> "6"
+            Type.KATASTRALNI_UZEMI -> "7"
+            Type.MESTSKY_OBVOD_MESTSKA_CAST -> "8"
+            Type.SPRAVNI_OBVOD_PRAHA -> "10"
+            Type.CAST_OBCE -> "11"
+            Type.OBEC -> "12"
+            Type.OBEC_SPOU -> "13"
+            Type.OBEC_SROP -> "14"
+            Type.OKRES -> "15"
+            Type.VYSSI_CELEK -> "17"
+            else -> "5"
+        }
+        return "all:$number"
     }
 
     private fun transformShape(listOfPoints: List<Any>) {

@@ -14,10 +14,14 @@ import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import androidx.databinding.DataBindingUtil
+import androidx.databinding.ViewDataBinding
 import androidx.lifecycle.Observer
+import com.nuivras.sarviun.BR
 import com.nuivras.sarviun.R
 import com.nuivras.sarviun.databinding.FragmentSearchDetailBinding
 import com.nuivras.sarviun.network.Type
+import kotlinx.android.synthetic.main.bottom_sheet_search_detail.*
 import kotlinx.android.synthetic.main.bottom_sheet_search_detail.view.*
 import kotlinx.android.synthetic.main.fragment_search.view.*
 import kotlinx.android.synthetic.main.fragment_search_detail.*
@@ -76,17 +80,21 @@ class SearchDetailFragment : Fragment() {
             this, viewModelFactory).get(SearchDetailViewModel::class.java)
 
 
-        //jestli se nic nestahlo, schovej je, pripadne se prida vysvetleni
+
+        //jestli se stahlo, zobraz to
         viewModel.propertiesIdentify.observe(viewLifecycleOwner, Observer {
             if (it.isNotEmpty()) {
-                binding.coordinateBottomSheet.detail_info_nested_scroll_view.visibility = View.VISIBLE
+                detail_info_nested_scroll_view.visibility = View.VISIBLE
             }
-            else {
-                binding.coordinateBottomSheet.detail_info_nested_scroll_view.visibility = View.GONE
-                if (viewModel.selectedProperty.value?.feature?.attributes?.typeTranslated == Type.ADRESNI_MISTO) {
-                    binding.coordinateBottomSheet.stavebni_objekt_not_found_layout.visibility = View.VISIBLE
-                }
+        })
+
+        //jestli se nestahl stavebni objekt pro adresni misto, zobraz upozorneni
+        viewModel.firstIdentify.observe(viewLifecycleOwner, Observer {
+            if (viewModel.selectedProperty.value?.feature?.attributes?.typeTranslated == Type.ADRESNI_MISTO
+                && it.layerId != 3) { //stavebni objekt
+                stavebni_objekt_not_found_layout.visibility = View.VISIBLE
             }
+            expandInnerLayout(inflater, it.layerId)
         })
 
         //data stazena, jakmile se naplni prekonvertovany shape s parcelou, zobraz polygon v mape
@@ -129,6 +137,7 @@ class SearchDetailFragment : Fragment() {
                         locationProperty.feature.attributes.xmax + ", " +
                         locationProperty.feature.attributes.ymax + ", " +
                         locationProperty.feature.attributes.isPoint + ") ")
+                viewModel.getDetails()
 
                 super.onPageFinished(view, url)
             }
@@ -162,15 +171,38 @@ class SearchDetailFragment : Fragment() {
         return binding.root
     }
 
+    private fun expandInnerLayout(inflater: LayoutInflater, layerId: Int) {
+        //fintafn pro pridani layoutu i s viewmodelem programove
+        val binding = DataBindingUtil.inflate<ViewDataBinding>(
+            inflater,
+            getInnerLayoutId(layerId),
+            detail_info_nested_scroll_view,
+            true
+        )
+        binding.setVariable(BR.viewModel, viewModel)
+    }
+
+    private fun getInnerLayoutId(layerId: Int) = when (layerId) {
+        Type.STAVEBNI_OBJEKT.layerId -> R.layout.detail_stavebni_objekt
+//        Type.ULICE.layerId -> R.layout.detail_ulice
+        Type.PARCELA.layerId -> R.layout.detail_parcela
+//        Type.ZAKLADNI_SIDELNI_JEDNOTKA.layerId -> R.layout.detail_zakladni_sidelni_jednotka
+//        Type.KATASTRALNI_UZEMI.layerId -> R.layout.detail_katastralni_uzemi
+//        Type.MESTSKY_OBVOD_MESTSKA_CAST.layerId -> R.layout.detail_mestsky_obvod_mestska_cast
+//        Type.SPRAVNI_OBVOD_PRAHA.layerId -> R.layout.detail_spravni_obvod_praha
+//        Type.CAST_OBCE.layerId -> R.layout.detail_cast_obce
+//        Type.OBEC.layerId -> R.layout.detail_obec
+//        Type.OBEC_SPOU.layerId -> R.layout.detail_obec_spou
+//        Type.OBEC_SROP.layerId -> R.layout.detail_obec_srop
+//        Type.OKRES.layerId -> R.layout.detail_okres
+//        Type.VYSSI_CELEK.layerId -> R.layout.detail_vyssi_celek
+        else -> R.layout.detail_stavebni_objekt
+    }
+
     private fun showObjectPolygon(it: ArrayList<DoubleArray>) {
         val array = arrayOfNulls<DoubleArray>(it.size)
         it.toArray(array)
         webView.loadUrl("javascript:showPolygon(" + array.contentDeepToString() + ") ")
-    }
-
-    override fun onResume() {
-        super.onResume()
-        viewModel.getDetails()
     }
 
 }
