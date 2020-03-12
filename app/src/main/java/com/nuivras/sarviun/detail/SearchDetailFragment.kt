@@ -57,13 +57,26 @@ class SearchDetailFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when(item.itemId){
-            R.id.navigate -> {
-                startActivity(mapIntent)
-                Toast.makeText(context,"Klik",Toast.LENGTH_SHORT).show()
+            R.id.about -> {
+                showAboutAppDialog()
                 return true
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun showAboutAppDialog() {
+        //Inflate the dialog with custom view
+        val mDialogView = layoutInflater.inflate(R.layout.dialog_about_app, null)
+        //AlertDialogBuilder
+        val mBuilder = AlertDialog.Builder(context!!)
+            .setView(mDialogView)
+            .setTitle(getString(R.string.about_app))
+            .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                dialog.dismiss()
+            }
+        //show dialog
+        mBuilder.show()
     }
 
     override fun onCreateView(
@@ -79,7 +92,7 @@ class SearchDetailFragment : Fragment() {
         binding.viewModel = ViewModelProviders.of(
             this, viewModelFactory).get(SearchDetailViewModel::class.java)
 
-
+        setHasOptionsMenu(true)
 
         //jestli se stahlo, zobraz to
         viewModel.propertiesIdentify.observe(viewLifecycleOwner, Observer {
@@ -124,9 +137,10 @@ class SearchDetailFragment : Fragment() {
             val activities: List<ResolveInfo> = activity!!.packageManager.queryIntentActivities(mapIntent, 0)
             val isIntentSafe: Boolean = activities.isNotEmpty()
 
-            // Show button in toolbar if it's safe
+            // Show button if it's safe
             if (isIntentSafe) {
-                setHasOptionsMenu(true)
+                binding.coordinateBottomSheet.navigateButton.visibility = View.VISIBLE
+                binding.coordinateBottomSheet.navigateButton.setOnClickListener { startActivity(mapIntent) }
             }
         }
 
@@ -186,7 +200,7 @@ class SearchDetailFragment : Fragment() {
         Type.STAVEBNI_OBJEKT.layerId -> R.layout.detail_stavebni_objekt
 //        Type.ULICE.layerId -> R.layout.detail_ulice
         Type.PARCELA.layerId -> R.layout.detail_parcela
-//        Type.ZAKLADNI_SIDELNI_JEDNOTKA.layerId -> R.layout.detail_zakladni_sidelni_jednotka
+        Type.ZAKLADNI_SIDELNI_JEDNOTKA.layerId -> R.layout.detail_zakladni_sidelni_jednotka
 //        Type.KATASTRALNI_UZEMI.layerId -> R.layout.detail_katastralni_uzemi
 //        Type.MESTSKY_OBVOD_MESTSKA_CAST.layerId -> R.layout.detail_mestsky_obvod_mestska_cast
 //        Type.SPRAVNI_OBVOD_PRAHA.layerId -> R.layout.detail_spravni_obvod_praha

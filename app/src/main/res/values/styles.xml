@@ -19,6 +19,11 @@
     <style name="ThemeOverlay.Sarviun.Toolbar" parent="Widget.AppCompat.Toolbar">
         <item name="titleTextColor">@color/chocolate_brown_700</item>
     </style>
+    
+    <style name="BottomSheetButtonStyle" parent="@style/Widget.AppCompat.Button.Borderless.Colored">
+        <item name="drawableTint">@color/colorAccent</item>
+        <item name="android:textColor">@color/colorAccent</item>
+    </style>
 
 
 </resources>

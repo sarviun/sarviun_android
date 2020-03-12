@@ -11,108 +11,132 @@
     </data>
 
 
-<androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:behavior_hideable="false"
-        app:behavior_peekHeight="56dp"
-        app:layout_behavior="@string/bottom_sheet_behavior"
-        tools:context="com.nuivras.sarviun.detail.SearchDetailFragment"
-        android:background="@drawable/background_bottom_sheet"
-        android:clickable="true"
-        android:focusable="true"
-        android:theme="@style/ThemeOverlay.Sarviun.BottomSheet">
-
-    <LinearLayout
-            android:id="@+id/stavebni_objekt_not_found_layout"
+    <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="vertical"
-            android:paddingTop="16dp"
-            android:paddingBottom="16dp"
-            android:visibility="gone"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/katastrButton"
-            tools:visibility="visible">
-
-        <ImageView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@drawable/ic_info_outline_black_24dp"/>
-
-        <TextView
-                android:id="@+id/textView37"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                android:text="@string/adresni_misto_mimo_stavebni_objekt" />
+            android:background="@drawable/background_bottom_sheet"
+            android:clickable="true"
+            android:focusable="true"
+            android:theme="@style/ThemeOverlay.Sarviun.BottomSheet"
+            app:behavior_hideable="false"
+            app:behavior_peekHeight="56dp"
+            app:layout_behavior="@string/bottom_sheet_behavior"
+            tools:context="com.nuivras.sarviun.detail.SearchDetailFragment">
 
         <Button
-                android:id="@+id/emptyDetailButtonExplanation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/button_jak_je_toto_mozne" />
-    </LinearLayout>
+                android:id="@+id/navigateButton"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginEnd="16dp"
+                android:drawableTop="@drawable/ic_navigation_white_24dp"
+                android:drawablePadding="8dp"
+                android:text="@string/navigate"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="@+id/katastrButton"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/katastrButton"
+                app:layout_constraintTop_toTopOf="@+id/katastrButton"
+                tools:visibility="visible"
+                style="@style/BottomSheetButtonStyle"/>
 
-    <androidx.core.widget.NestedScrollView
-            android:id="@+id/detail_info_nested_scroll_view"
-            android:layout_width="0dp"
-            android:layout_height="290dp"
-            android:background="#FFED9F"
-            android:fillViewport="true"
-            android:visibility="gone"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/stavebni_objekt_not_found_layout"
-            tools:visibility="visible">
+        <LinearLayout
+                android:id="@+id/stavebni_objekt_not_found_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/red_a100"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp"
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/katastrButton"
+                tools:visibility="visible">
+
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:src="@drawable/ic_info_outline_black_24dp" />
+
+            <TextView
+                    android:id="@+id/textView37"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:text="@string/adresni_misto_mimo_stavebni_objekt" />
+
+            <Button
+                    android:id="@+id/emptyDetailButtonExplanation"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/button_jak_je_toto_mozne"
+                    style="@style/BottomSheetButtonStyle"/>
+        </LinearLayout>
+
+        <androidx.core.widget.NestedScrollView
+                android:id="@+id/detail_info_nested_scroll_view"
+                android:layout_width="0dp"
+                android:layout_height="290dp"
+                android:background="#FFED9F"
+                android:fillViewport="true"
+                android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/stavebni_objekt_not_found_layout"
+                tools:visibility="visible">
 
             <!--tady se vklada layout programove-->
 
 
-    </androidx.core.widget.NestedScrollView>
+        </androidx.core.widget.NestedScrollView>
 
 
-    <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="36dp"
-            android:layout_height="56dp"
-            android:layout_marginStart="16dp"
-            android:transitionName="imageView"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/ic_place_black_24dp" />
+        <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="36dp"
+                android:layout_height="56dp"
+                android:layout_marginStart="16dp"
+                android:transitionName="imageView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_place_black_24dp" />
 
-    <TextView
-            android:id="@+id/address_text"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="@{viewModel.selectedProperty.name}"
-            android:textAppearance="@style/TextAppearance.AppCompat.Small"
-            android:transitionName="textView"
-            app:layout_constraintBottom_toBottomOf="@+id/imageView"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/imageView"
-            app:layout_constraintTop_toTopOf="@+id/imageView"
-            tools:text="Třebíč" />
+        <TextView
+                android:id="@+id/address_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@{viewModel.selectedProperty.name}"
+                android:textAppearance="@style/TextAppearance.AppCompat.Small"
+                android:transitionName="textView"
+                app:layout_constraintBottom_toBottomOf="@+id/imageView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/imageView"
+                app:layout_constraintTop_toTopOf="@+id/imageView"
+                tools:text="Třebíč" />
 
-    <Button
-            android:id="@+id/katastrButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="Zobrazit záznam v Katastru nemovitostí"
-            android:visibility="@{viewModel.selectedProperty.feature.attributes.katastrRedirectionVisibility}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView" />
+        <Button
+                android:id="@+id/katastrButton"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
+                android:drawableTop="@drawable/ic_list_white_24dp"
+                android:drawablePadding="8dp"
+                android:text="@string/zaznam_katastr_nemovitosti"
+                android:visibility="@{viewModel.selectedProperty.feature.attributes.katastrRedirectionVisibility}"
+                app:layout_constraintEnd_toStartOf="@+id/navigateButton"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imageView"
+                style="@style/BottomSheetButtonStyle"/>
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </layout>
