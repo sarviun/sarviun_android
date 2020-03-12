@@ -109,6 +109,18 @@ data class Attributes(
     @Json(name = "Převažující charakter využití ZSJ")
     val prevazujiciCharakterVyuzitiZSJ: String?,
     @Json(name = "Datum vzniku prvku")
-    val datumVznikuPrvku: String?
+    val datumVznikuPrvku: String?,
+
+    //KATASTRALNI UZEMI
+    //+ISKN,ISUI,datum vzniku prvku
+    @Json(name = "Kód katastrálního území")
+    val kodKatastralnihoUzemi: String?,
+    @Json(name = "Název katastrálního území")
+    val nazevKatastralnihoUzemi: String?,
+    @Json(name = "Příznak existence digitální mapy")
+    val priznakExistenceDigitalniMapy: String?,
+    @Json(name = "Nadřazená obec")
+    val nadrazenaObec: String?
+
 
 )

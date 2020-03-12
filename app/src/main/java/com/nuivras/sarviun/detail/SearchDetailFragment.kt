@@ -151,7 +151,6 @@ class SearchDetailFragment : Fragment() {
                         locationProperty.feature.attributes.xmax + ", " +
                         locationProperty.feature.attributes.ymax + ", " +
                         locationProperty.feature.attributes.isPoint + ") ")
-                viewModel.getDetails()
 
                 super.onPageFinished(view, url)
             }
@@ -201,7 +200,7 @@ class SearchDetailFragment : Fragment() {
 //        Type.ULICE.layerId -> R.layout.detail_ulice
         Type.PARCELA.layerId -> R.layout.detail_parcela
         Type.ZAKLADNI_SIDELNI_JEDNOTKA.layerId -> R.layout.detail_zakladni_sidelni_jednotka
-//        Type.KATASTRALNI_UZEMI.layerId -> R.layout.detail_katastralni_uzemi
+        Type.KATASTRALNI_UZEMI.layerId -> R.layout.detail_katastralni_uzemi
 //        Type.MESTSKY_OBVOD_MESTSKA_CAST.layerId -> R.layout.detail_mestsky_obvod_mestska_cast
 //        Type.SPRAVNI_OBVOD_PRAHA.layerId -> R.layout.detail_spravni_obvod_praha
 //        Type.CAST_OBCE.layerId -> R.layout.detail_cast_obce
@@ -217,6 +216,11 @@ class SearchDetailFragment : Fragment() {
         val array = arrayOfNulls<DoubleArray>(it.size)
         it.toArray(array)
         webView.loadUrl("javascript:showPolygon(" + array.contentDeepToString() + ") ")
+    }
+
+    override fun onResume() {
+        viewModel.getDetails()
+        super.onResume()
     }
 
 }

@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#fdd835</color>
     <color name="colorPrimaryDark">#c6a700</color>
-    <color name="colorAccent">#355afd</color> //complementary
+    <color name="colorComplementary">#317121</color> //complementary
     
     <color name="chocolate_brown_700">#5d4037</color>
     <color name="red_a100">#ff8a80</color>

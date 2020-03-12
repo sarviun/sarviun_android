@@ -14,7 +14,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        android:theme="@style/ThemeOverlay.Sarviun.BottomSheet">
+        android:theme="@style/ThemeOverlay.Sarviun.BottomSheet"
+        tools:background="@color/colorPrimary">
 
 
     <TextView
