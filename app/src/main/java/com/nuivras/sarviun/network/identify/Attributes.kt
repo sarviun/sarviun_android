@@ -95,6 +95,20 @@ data class Attributes(
     @Json(name = "ID řízení v ISKN")
     val iDRizeniVISKN: String?,
     @Json(name = "Číslo parcely")
-    val cisloParcely: String?
+    val cisloParcely: String?,
+
+    //ZSJ
+    //+nadrazezene katastr. uzemi
+    //+id navrhu zmeny v ISUI
+    @Json(name = "Kód ZSJ")
+    val kodZSJ: String?,
+    @Json(name = "Název ZSJ")
+    val nazevZSJ: String?,
+    @Json(name = "Výměra ZSJ v m2")
+    val vymeraZSJVM2: String?,
+    @Json(name = "Převažující charakter využití ZSJ")
+    val prevazujiciCharakterVyuzitiZSJ: String?,
+    @Json(name = "Datum vzniku prvku")
+    val datumVznikuPrvku: String?
 
 )

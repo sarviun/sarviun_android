@@ -66,5 +66,14 @@
     <string name="nadrazene_katastralni_uzemi">Nadřazené katastrální území</string>
     <string name="id_rizeni_iskn">ID řízení v ISKN</string>
     <string name="cislo_parcely">Číslo parcely</string>
+    <string name="about_zakladni_sidelni_jednotka">Informace o základní sídelní jednotce</string>
+    <string name="kod_zsj">Kód ZSJ</string>
+    <string name="nazev_zsj">Název ZSJ</string>
+    <string name="vymera_zsj">Výměra zsj v m2</string>
+    <string name="charakter_zsj">Převažující charakter využití ZSJ</string>
+    <string name="datum_vzniku_prvku">Datum vzniku prvku</string>
+    <string name="about_app">O aplikaci</string>
+    <string name="about_app_description"><b>Sarviun</b> je našeptávač popisných a lokalizačních údajů o územních prvcích, územně evidenčních jednotkách, účelových prvcích a adresách z Registru územní identifikace, adres a nemovitostí (RÚIAN), který je spravován Českým úřadem zeměměřickým a katastrálním (ČÚZK). Ten garantuje průběžnou aktualizaci záznamů registru přes Informační systém územní identifkace ISÚI (editory jsou správce registru, obce, stavební úřady a ČSÚ).\n\nSarviun dokáže pro parcely a adresní místa zobrazit data o vlastnictví z katastru nemovitostí nebo spustit navigaci k vyhledané adrese. \n\nZa správnost dat neručím, aplikace data neupravuje, pouze zobrazuje. \n\nPracuje se na vylepšení (zobrazení geometrie parcel, vyšších celků). S podněty na rozšíření nebo komerční využití a spolupráci mě neváhejte kontaktovat na sarviun.podpora@gmail.cz</string>
+    <string name="zaznam_katastr_nemovitosti">Záznam v Katastru nemovitostí</string>
 
 </resources>
