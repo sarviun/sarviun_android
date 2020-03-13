@@ -120,7 +120,86 @@ data class Attributes(
     @Json(name = "Příznak existence digitální mapy")
     val priznakExistenceDigitalniMapy: String?,
     @Json(name = "Nadřazená obec")
-    val nadrazenaObec: String?
+    val nadrazenaObec: String?,
+
+    //momc
+    //nadrazena obec, isui, datum vzniku prvku
+    @Json(name = "Kód MOMC")
+    val kodMOMC: String?,
+    @Json(name = "Název MOMC")
+    val nazevMOMC: String?,
+    @Json(name = "Nadřazený MOP")
+    val nadrazenyMOP: String?,
+    @Json(name = "Správní obvod")
+    val spravniObvod: String?,
+
+    //spravni obvod
+    //+ picoviny
+    @Json(name = "Kód správního obvodu")
+    val kodSpravnihoObvodu: String?,
+    @Json(name = "Název správního obvodu")
+    val nazevSpravnihoObvodu: String?,
+    @Json(name = "Kód správní MOMC")
+    val kodSpravniMOMC: String?,
+
+    //cast obce
+    @Json(name = "Kód části obce")
+    val kodCastiObce: String?,
+    @Json(name = "Název části obce")
+    val nazevCastiObce: String?,
+
+    //obec
+    @Json(name = "Kód obce")
+    val kodObce: String?,
+    @Json(name = "Název obce")
+    val nazevObce: String?,
+    @Json(name = "Status obce")
+    val statusObce: String?,
+    @Json(name = "Nadřazený okres")
+    val nadrazenyOkres: String?,
+    @Json(name = "Nadřazený POU")
+    val nadrazenyPOU: String?,
+    @Json(name = "Rozsah členění statutárního města na MOMC")
+    val rozsahCleneniStatutarnihoMestaNaMOMC: String?,
+    @Json(name = "Typ MOMC, na něž je statutární město rozčleněno")
+    val typMOMCNaNezJeStatutarniMestoRozcleneno: String?,
+    @Json(name = "Kód územního celku v NUTS / LAU")
+    val kodUzemnihoCelkuVNUTSLAU: String?,
+
+    //obec spou
+    @Json(name = "Kód POU")
+    val kodPOU: String?,
+    @Json(name = "Název POU")
+    val nazevPOU: String?,
+    @Json(name = "Kód správní obce")
+    val kodSpravniObce: String?,
+    @Json(name = "Nadřazená ORP")
+    val nadrazenaORP: String?,
+
+    //obec srop
+    @Json(name = "Kód ORP")
+    val kodORP: String?,
+    @Json(name = "Název ORP")
+    val nazevORP: String?,
+    @Json(name = "Nadřazený VÚSC")
+    val nadrazenyVUSC: String?,
+
+    //okres
+    @Json(name = "Kód okresu")
+    val kodOkresu: String?,
+    @Json(name = "Název okresu")
+    val nazevOkresu: String?,
+    @Json(name = "Nadřazený kraj 1960")
+    val nadrazenyKraj1960: String?,
+
+    //vusc
+    @Json(name = "Kód VÚSC")
+    val kodVUSC: String?,
+    @Json(name = "Název VÚSC")
+    val nazevVUSC: String?,
+    @Json(name = "Nadřazený region soudržnosti")
+    val nadrazenyRegionSoudrznosti: String?
+
 
 
 )

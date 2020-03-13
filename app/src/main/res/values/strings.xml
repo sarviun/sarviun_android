@@ -80,5 +80,44 @@
     <string name="nazev_katastralniho_uzemi">Název katastrálního území</string>
     <string name="digitalni_mapa">Příznak existence digitální mapy</string>
     <string name="nadrazena_obec">Nadřazená obec</string>
+    <string name="about_momc">Informace o městském obvodu/městské části ve statutárním městě a hlavním městě Praze</string>
+    <string name="kod_momc">Kód MOMC</string>
+    <string name="nazev_momc">Název MOMC</string>
+    <string name="nadrazeny_mop">Nadřazený MOP</string>
+    <string name="spravni_obvod">Správní obvod</string>
+    <string name="about_spravni_obvod">Informace o správním obvodu v hlavním městě Praze</string>
+    <string name="kod_spravniho_obvodu">Kód správního obvodu</string>
+    <string name="nazev_spravniho_obvodu">Název správního obvodu</string>
+    <string name="kod_spravni_MOMC">Kód správní MOMC</string>
+    <string name="about_cast_obce">Informace o části obce</string>
+    <string name="kod_casti_obce">Kód části obce</string>
+    <string name="nazev_casti_obce">Název části obce</string>
+    <string name="about_obec">Informace o obci</string>
+    <string name="kod_obce">Kód obce</string>
+    <string name="nazev_obce">Název obce</string>
+    <string name="status_obce">Status obce</string>
+    <string name="nadrazeny_okres">Nadřazený okres</string>
+    <string name="nadrazeny_pou">Nadřazený POU</string>
+    <string name="rozsah_cleneni_statut_mesta_momc">Rozsah členění statutárního města na MOMC</string>
+    <string name="typ_momc_statut_mesto">Typ MOMC, na něž je statutární město rozčleněno</string>
+    <string name="kod_NUTS_LAU">Kód územního celku v NUTS / LAU</string>
+    <string name="about_obec_spou">Informace o obci s pověřeným obecním úřadem</string>
+    <string name="kod_obce_pou">Kód POU</string>
+    <string name="nazev_obce_pou">Název POU</string>
+    <string name="kod_spravni_obce">Kód správní obce</string>
+    <string name="nadrazena_orp">Nadřazená ORP</string>
+    <string name="about_obec_srop">Infomace o obci s rozšířenou působností</string>
+    <string name="kod_obce_srop">Kód ORP</string>
+    <string name="nazev_obce_srop">Název ORP</string>
+    <string name="nadrazeny_vusc">Nadřazený vyšší uzemně samosprávný celek</string>
+    <string name="about_okres">Informace o okrese</string>
+    <string name="kod_okresu">Kód okresu</string>
+    <string name="nazev_okresu">Název okresu</string>
+    <string name="nadrazeny_kraj_1960">Nadřazený kraj 1960</string>
+    <string name="about_vusc">Informace o vyšším územně samosprávním celku</string>
+    <string name="kod_vusc">Kód VÚSC</string>
+    <string name="nazev_vusc">Název VÚSC</string>
+    <string name="nadrazeny_region_soudrznosti">Nadřazený region soudržnosti</string>
+
 
 </resources>

@@ -108,7 +108,7 @@ class SearchDetailViewModel (locationProperty: LocationGeneral, app: Application
     //TODO: cisla nahradit Type.layerId
     private fun getLayerTypes(): String {
         val number = when (_selectedProperty.value?.feature?.attributes?.typeTranslated) {
-            Type.PARCELA_DEFINICNI_BOD -> "5" //stavebni objekt, parcela
+            Type.PARCELA_DEFINICNI_BOD -> "5" // parcela
             Type.ADRESNI_MISTO -> "3,5" //stavebni objekt, parcela
             Type.ULICE -> "4"
             Type.ZAKLADNI_SIDELNI_JEDNOTKA -> "6"

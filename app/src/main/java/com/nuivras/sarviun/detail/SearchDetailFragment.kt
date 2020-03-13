@@ -201,14 +201,14 @@ class SearchDetailFragment : Fragment() {
         Type.PARCELA.layerId -> R.layout.detail_parcela
         Type.ZAKLADNI_SIDELNI_JEDNOTKA.layerId -> R.layout.detail_zakladni_sidelni_jednotka
         Type.KATASTRALNI_UZEMI.layerId -> R.layout.detail_katastralni_uzemi
-//        Type.MESTSKY_OBVOD_MESTSKA_CAST.layerId -> R.layout.detail_mestsky_obvod_mestska_cast
-//        Type.SPRAVNI_OBVOD_PRAHA.layerId -> R.layout.detail_spravni_obvod_praha
-//        Type.CAST_OBCE.layerId -> R.layout.detail_cast_obce
-//        Type.OBEC.layerId -> R.layout.detail_obec
-//        Type.OBEC_SPOU.layerId -> R.layout.detail_obec_spou
-//        Type.OBEC_SROP.layerId -> R.layout.detail_obec_srop
-//        Type.OKRES.layerId -> R.layout.detail_okres
-//        Type.VYSSI_CELEK.layerId -> R.layout.detail_vyssi_celek
+        Type.MESTSKY_OBVOD_MESTSKA_CAST.layerId -> R.layout.detail_mestsky_obvod_mestska_cast
+        Type.SPRAVNI_OBVOD_PRAHA.layerId -> R.layout.detail_spravni_obvod_praha
+        Type.CAST_OBCE.layerId -> R.layout.detail_cast_obce
+        Type.OBEC.layerId -> R.layout.detail_obec
+        Type.OBEC_SPOU.layerId -> R.layout.detail_obec_spou
+        Type.OBEC_SROP.layerId -> R.layout.detail_obec_srop
+        Type.OKRES.layerId -> R.layout.detail_okres
+        Type.VYSSI_CELEK.layerId -> R.layout.detail_vyssi_celek
         else -> R.layout.detail_stavebni_objekt
     }
 
