@@ -1,6 +1,7 @@
 package com.nuivras.sarviun
 
 import android.view.View
+import android.widget.ProgressBar
 import androidx.core.widget.NestedScrollView
 import androidx.databinding.BindingAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -23,20 +24,16 @@ fun bindRecyclerView(recyclerView: RecyclerView, data: List<LocationGeneral>?) {
 // * displays a broken image to reflect the connection error.  When the request is finished, it
 // * hides the image view.
 // */
-//@BindingAdapter("StavebniObjektVisibility")
-//fun bindStatus(statusImageView: NestedScrollView, status: RUIANApiStatus?) {
-//    when (status) {
-////        RUIANApiStatus.LOADING -> {
-////            statusImageView.visibility = View.VISIBLE
-////            statusImageView.setImageResource(R.drawable.loading_animation)
-////        }
-//        RUIANApiStatus.ERROR -> {
-//            statusImageView.visibility = View.GONE
-//        }
-//        RUIANApiStatus.DONE -> {
-//            statusImageView.visibility = View.VISIBLE
-//        }
-//    }
-//}
+@BindingAdapter("loadingVisibility")
+fun bindStatus(statusProgressBar: ProgressBar, status: RUIANApiStatus?) {
+    when (status) {
+        RUIANApiStatus.LOADING -> {
+            statusProgressBar.visibility = View.VISIBLE
+        }
+        else -> {
+            statusProgressBar.visibility = View.GONE
+        }
+    }
+}
 
 

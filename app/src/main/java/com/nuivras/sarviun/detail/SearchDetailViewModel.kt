@@ -12,10 +12,7 @@ import com.nuivras.sarviun.network.identify.Result
 import com.nuivras.sarviun.search.RUIANApiStatus
 import com.nuivras.sarviun.utils.CoordinatesConvertor
 import com.nuivras.sarviun.utils.Utils
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.NumberFormat
@@ -85,14 +82,15 @@ class SearchDetailViewModel (locationProperty: LocationGeneral, app: Application
                 // this will run on a thread managed by Retrofit
                 val listResult = RUIANApi.retrofitService
                     .identify(geometry, mapExtent, getLayerTypes())
-                _status.value = RUIANApiStatus.DONE
                 _propertiesIdentify.value = listResult.results
 
-                //TODO: radeji observe na _propertiesIdentify?
                 if (listResult.results.isNotEmpty()) {
                     _firstIdentify.value = _propertiesIdentify.value?.get(0)
-                    transformShape(_firstIdentify.value?.geometry?.rings?.get(0)!!)
+                    //transformShape(_firstIdentify.value?.geometry?.rings?.get(0)!!)
+                    _coordinates.value = fetchTransformedCoordinates(_firstIdentify.value?.geometry?.rings?.get(0)!!)
                 }
+
+                _status.value = RUIANApiStatus.DONE
 
             } catch (e: Exception) {
                 //if viewmodeljob is canceled in updateLocationResult,
@@ -136,6 +134,19 @@ class SearchDetailViewModel (locationProperty: LocationGeneral, app: Application
         }
 
         _coordinates.value = transformedCoordinates
+    }
+
+    private suspend fun fetchTransformedCoordinates(listOfPoints: List<Any>): ArrayList<DoubleArray> {
+        return GlobalScope.async(Dispatchers.Default) {
+            val transformedCoordinates = arrayListOf<DoubleArray>()
+            for (point in listOfPoints) {
+                if (point is List<*>) {
+                    val pointInDouble: List<Double> = point.filterIsInstance<Double>()
+                    transformedCoordinates.add(CoordinatesConvertor.JTSKtoWGS(pointInDouble[1].absoluteValue, pointInDouble[0].absoluteValue, 245.0))
+                }
+            }
+            return@async transformedCoordinates
+        }.await()
     }
 
     fun getDetails () {

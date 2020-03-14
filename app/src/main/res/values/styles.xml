@@ -14,6 +14,7 @@
     <style name="ThemeOverlay.Sarviun.BottomSheet" parent="">
         <item name="android:textColorSecondary">@color/chocolate_brown_700</item>
         <item name="android:textColorTertiary">@color/chocolate_brown_700</item>
+        <item name="android:indeterminateTint">@color/chocolate_brown_700</item>
     </style>
 
     <style name="ThemeOverlay.Sarviun.Toolbar" parent="Widget.AppCompat.Toolbar">

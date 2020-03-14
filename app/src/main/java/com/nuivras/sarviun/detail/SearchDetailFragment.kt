@@ -153,6 +153,7 @@ class SearchDetailFragment : Fragment() {
                         locationProperty.feature.attributes.isPoint + ") ")
 
                 super.onPageFinished(view, url)
+                viewModel.getDetails()
             }
         }
 
@@ -216,11 +217,6 @@ class SearchDetailFragment : Fragment() {
         val array = arrayOfNulls<DoubleArray>(it.size)
         it.toArray(array)
         webView.loadUrl("javascript:showPolygon(" + array.contentDeepToString() + ") ")
-    }
-
-    override fun onResume() {
-        viewModel.getDetails()
-        super.onResume()
     }
 
 }
