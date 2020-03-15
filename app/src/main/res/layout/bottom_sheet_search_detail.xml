@@ -55,6 +55,7 @@
                 android:id="@+id/stavebni_objekt_not_found_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:background="@color/red_a100"
                 android:gravity="center"
                 android:orientation="vertical"
@@ -81,17 +82,22 @@
 
             <Button
                     android:id="@+id/emptyDetailButtonExplanation"
+                    style="@style/BottomSheetButtonStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/button_jak_je_toto_mozne"
-                    style="@style/BottomSheetButtonStyle"/>
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp"
+                    android:text="@string/button_jak_je_toto_mozne" />
         </LinearLayout>
 
         <androidx.core.widget.NestedScrollView
                 android:id="@+id/detail_info_nested_scroll_view"
                 android:layout_width="0dp"
                 android:layout_height="290dp"
-                android:background="#FFED9F"
+                android:layout_marginTop="8dp"
+                android:background="#FFFFFF"
                 android:fillViewport="true"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"

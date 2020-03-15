@@ -17,13 +17,17 @@
         <item name="android:indeterminateTint">@color/chocolate_brown_700</item>
     </style>
 
+    <style name="ThemeOverlay.Sarviun.BottomSheet.InnerScrollDetail" parent="">
+        <item name="android:textColorSecondary">@android:color/black</item>
+        <item name="android:textColorTertiary">@android:color/black</item>
+    </style>
+
     <style name="ThemeOverlay.Sarviun.Toolbar" parent="Widget.AppCompat.Toolbar">
         <item name="titleTextColor">@color/chocolate_brown_700</item>
     </style>
     
-    <style name="BottomSheetButtonStyle" parent="@style/Widget.AppCompat.Button.Borderless.Colored">
-        <item name="drawableTint">@color/colorComplementary</item>
-        <item name="android:textColor">@color/colorComplementary</item>
+    <style name="BottomSheetButtonStyle" parent="@style/Widget.AppCompat.Button">
+        <item name="android:background">@drawable/button_basic</item>
     </style>
 
 

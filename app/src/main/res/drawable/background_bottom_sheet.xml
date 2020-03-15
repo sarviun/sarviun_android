@@ -9,6 +9,7 @@
                     android:centerColor="#26000000"
                     android:startColor="#66000000" />
             <size android:height="32dp" />
+            <corners android:topLeftRadius="18dp" android:topRightRadius="18dp" />
 
         </shape>
     </item>
