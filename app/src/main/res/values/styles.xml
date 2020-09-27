@@ -1,13 +1,15 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat">
+    <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
-        <item name="colorAccent">@color/colorPrimary</item>
         <item name="android:colorBackground">@color/chocolate_brown_700</item>
-        <item name="toolbarStyle">@style/ThemeOverlay.Sarviun.Toolbar</item>
+        <item name="colorAccent">@color/colorPrimary</item>
+        <!-- proto, aby to nepridavalo navic ikonky a radek, protoze je to v xml MaterialToolbar -->
+        <item name="searchViewStyle">@style/Sarviun.SearchViewStyle</item>
 
     </style>
 
@@ -22,11 +24,26 @@
         <item name="android:textColorTertiary">@android:color/black</item>
     </style>
 
-    <style name="ThemeOverlay.Sarviun.Toolbar" parent="Widget.AppCompat.Toolbar">
+    <style name="ThemeOverlay.Sarviun.Toolbar" parent="Widget.MaterialComponents.Toolbar.Primary">
         <item name="titleTextColor">@color/chocolate_brown_700</item>
+        <item name="materialThemeOverlay">@style/ThemeOverlayMaterial.Sarviun.Toolbar</item>
     </style>
-    
-    <style name="BottomSheetButtonStyle" parent="@style/Widget.AppCompat.Button">
+
+    <style name="ThemeOverlayMaterial.Sarviun.Toolbar" parent="" >
+        <item name="android:textColorHint">@color/colorComplementary</item>
+        <item name="colorControlNormal">@color/colorComplementary</item>
+        <item name="colorControlActivated">@color/colorComplementary</item>
+        <item name="colorControlHighlight">@color/colorComplementary</item>
+        <item name="colorAccent">@color/colorComplementary</item>
+        <item name="android:editTextColor">@color/colorComplementary</item>
+        <item name="titleTextColor">@color/chocolate_brown_700</item>
+        <item name="colorOnPrimary">@color/colorComplementary</item>
+    </style>
+
+    <style name="Sarviun.SearchViewStyle" parent="Widget.AppCompat.SearchView.ActionBar">
+    </style>
+
+    <style name="BottomSheetButtonStyle" parent="Widget.MaterialComponents.Button">
         <item name="android:background">@drawable/button_basic</item>
     </style>
 

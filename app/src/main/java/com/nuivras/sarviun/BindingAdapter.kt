@@ -36,4 +36,16 @@ fun bindStatus(statusProgressBar: ProgressBar, status: RUIANApiStatus?) {
     }
 }
 
+@BindingAdapter("downloadingProgressVisibility")
+fun bindProgress(statusProgressBar: ProgressBar, status: RUIANApiStatus?) {
+    when (status) {
+        RUIANApiStatus.LOADING -> {
+            statusProgressBar.visibility = View.VISIBLE
+        }
+        else -> {
+            statusProgressBar.visibility = View.GONE
+        }
+    }
+}
+
 

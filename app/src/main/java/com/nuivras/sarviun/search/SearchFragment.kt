@@ -1,19 +1,19 @@
 package com.nuivras.sarviun.search
 
 import android.os.Build
-import androidx.lifecycle.ViewModelProviders
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.transition.TransitionInflater
+import android.view.*
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.navigation.fragment.findNavController
 import com.nuivras.sarviun.MainActivity
+import com.nuivras.sarviun.R
 
 import com.nuivras.sarviun.databinding.FragmentSearchBinding
 import com.nuivras.sarviun.network.LocationGeneral
@@ -30,7 +30,7 @@ class SearchFragment : Fragment() {
      * Lazily initialize our [SearchViewModel].
      */
     private val viewModel: SearchViewModel by lazy {
-        ViewModelProviders.of(this).get(SearchViewModel::class.java)
+        ViewModelProvider(this).get(SearchViewModel::class.java)
     }
 
 
@@ -43,7 +43,7 @@ class SearchFragment : Fragment() {
         val binding = FragmentSearchBinding.inflate(inflater)
 
         // Allows Data Binding to Observe LiveData with the lifecycle of this Fragment
-        binding.setLifecycleOwner(this)
+        binding.lifecycleOwner = this
 
         // Giving the binding access to the SearchViewModel
         binding.viewModel = viewModel
@@ -113,13 +113,47 @@ class SearchFragment : Fragment() {
                 }
                 else {
                     binding.typeToSearch.visibility = View.GONE
+                    binding.notFoundLayout.visibility = View.GONE
                 }
                 viewModel.updateLocationResults(s.toString())
 
             }
         })
 
+        setHasOptionsMenu(true)
+
         return binding.root
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_search_detail, menu)
+
+        val mSearch = menu.findItem(R.id.search)
+        val mSearchView: SearchView = mSearch.actionView as SearchView
+        mSearchView.queryHint = getString(R.string.search)
+
+        mSearchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if (newText != null) {
+                    query = newText
+//                    if (query.isEmpty()) {
+//                        typeToSearch.visibility = View.VISIBLE
+//                    } else {
+//                        typeToSearch.visibility = View.GONE
+//                        notFoundLayout.visibility = View.GONE
+//                    }
+                    viewModel.updateLocationResults(newText)
+                }
+                return true
+            }
+        })
+
+        menu.performIdentifierAction(R.id.search, 0)
+        super.onCreateOptionsMenu(menu, inflater)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

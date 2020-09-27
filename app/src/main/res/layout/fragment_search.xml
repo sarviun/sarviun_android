@@ -17,10 +17,12 @@
                 android:orientation="vertical"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content" app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" app:layout_constraintTop_toTopOf="@id/list_view"
                 app:layout_constraintStart_toStartOf="parent" android:visibility="visible"
                 android:id="@+id/type_to_search"
-                android:gravity="center">
+                android:gravity="center"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
             <ImageView
                     android:layout_width="72dp"
                     android:layout_height="72dp" app:srcCompat="@drawable/ic_place_white_24dp"
@@ -37,7 +39,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" android:id="@+id/not_found_layout" android:visibility="gone">
+                app:layout_constraintTop_toTopOf="@id/list_view" android:id="@+id/not_found_layout" android:visibility="gone"
+                tools:visibility="visible">
             <ImageView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" app:srcCompat="@mipmap/ic_launcher"
@@ -47,20 +50,31 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content" android:id="@+id/textView37"/>
         </LinearLayout>
+
+
+        <View
+                android:id="@+id/view3"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                app:layout_constraintBottom_toBottomOf="@id/editText"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
         <EditText
-            android:id="@+id/editText"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:layout_marginLeft="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_marginRight="8dp"
-            android:ems="10"
-            android:hint="@string/hint_type_to_search"
-            android:inputType="textPersonName"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+                android:id="@+id/editText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginRight="8dp"
+                android:ems="10"
+                android:hint="@string/hint_type_to_search"
+                android:inputType="textPersonName"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list_view"
@@ -73,6 +87,17 @@
             app:layout_constraintTop_toBottomOf="@+id/editText"
             app:listData="@{viewModel.properties}"
             tools:listitem="@layout/list_view_item" />
+
+        <ProgressBar
+                android:id="@+id/progressBar2"
+                style="?android:attr/progressBarStyle"
+                downloadingProgressVisibility="@{viewModel.status}"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="@id/list_view" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
