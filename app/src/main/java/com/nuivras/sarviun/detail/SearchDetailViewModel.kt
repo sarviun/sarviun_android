@@ -180,4 +180,12 @@ class SearchDetailViewModel (locationProperty: LocationGeneral, app: Application
         super.onCleared()
         viewModelJob.cancel()
     }
+
+    fun getGrid() {
+        exportMap()
+    }
+
+    private fun exportMap() {
+
+    }
 }

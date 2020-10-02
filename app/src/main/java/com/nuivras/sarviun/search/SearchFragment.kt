@@ -6,6 +6,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.transition.TransitionInflater
 import android.view.*
+import android.widget.LinearLayout
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -25,6 +26,8 @@ class SearchFragment : Fragment() {
 
     var sharedElement: View? = null
     var query: CharSequence = ""
+    lateinit var mTypeToSearchLayout: LinearLayout
+    lateinit var mNotFoundLayout: LinearLayout
 
     /**
      * Lazily initialize our [SearchViewModel].
@@ -94,31 +97,8 @@ class SearchFragment : Fragment() {
 
         })
 
-
-        binding.editText.addTextChangedListener(object : TextWatcher {
-
-            override fun afterTextChanged(s: Editable) {
-
-            }
-
-            override fun beforeTextChanged(s: CharSequence, start: Int,
-                                           count: Int, after: Int) {
-            }
-
-            override fun onTextChanged(s: CharSequence, start: Int,
-                                       before: Int, count: Int) {
-                query = s
-                if (query.isEmpty()) {
-                    binding.typeToSearch.visibility = View.VISIBLE
-                }
-                else {
-                    binding.typeToSearch.visibility = View.GONE
-                    binding.notFoundLayout.visibility = View.GONE
-                }
-                viewModel.updateLocationResults(s.toString())
-
-            }
-        })
+        mTypeToSearchLayout = binding.typeToSearch
+        mNotFoundLayout = binding.notFoundLayout
 
         setHasOptionsMenu(true)
 
@@ -140,12 +120,12 @@ class SearchFragment : Fragment() {
             override fun onQueryTextChange(newText: String?): Boolean {
                 if (newText != null) {
                     query = newText
-//                    if (query.isEmpty()) {
-//                        typeToSearch.visibility = View.VISIBLE
-//                    } else {
-//                        typeToSearch.visibility = View.GONE
-//                        notFoundLayout.visibility = View.GONE
-//                    }
+                    if (query.isEmpty()) {
+                        mTypeToSearchLayout.visibility = View.VISIBLE
+                    } else {
+                        mTypeToSearchLayout.visibility = View.GONE
+                        mNotFoundLayout.visibility = View.GONE
+                    }
                     viewModel.updateLocationResults(newText)
                 }
                 return true

@@ -1,21 +1,15 @@
 package com.nuivras.sarviun.detail
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo
-import android.location.Location
+import android.graphics.Color
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.transition.TransitionInflater
 import android.view.*
-import android.webkit.WebView
-import android.webkit.WebViewClient
 import android.widget.Toast
-import androidx.activity.result.ActivityResultLauncher
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -24,8 +18,32 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
-import com.google.android.gms.location.FusedLocationProviderClient
-import com.google.android.gms.location.LocationServices
+import com.mapbox.android.core.permissions.PermissionsListener
+import com.mapbox.android.core.permissions.PermissionsManager
+import com.mapbox.android.gestures.StandardScaleGestureDetector
+import com.mapbox.geojson.Feature
+import com.mapbox.geojson.FeatureCollection
+import com.mapbox.geojson.LineString
+import com.mapbox.geojson.Point
+import com.mapbox.mapboxsdk.Mapbox
+import com.mapbox.mapboxsdk.camera.CameraUpdateFactory
+import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.geometry.LatLngBounds
+import com.mapbox.mapboxsdk.geometry.LatLngQuad
+import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions
+import com.mapbox.mapboxsdk.location.LocationComponentOptions
+import com.mapbox.mapboxsdk.location.modes.CameraMode
+import com.mapbox.mapboxsdk.location.modes.RenderMode
+import com.mapbox.mapboxsdk.maps.MapboxMap
+import com.mapbox.mapboxsdk.maps.Style
+import com.mapbox.mapboxsdk.plugins.localization.LocalizationPlugin
+import com.mapbox.mapboxsdk.style.layers.LineLayer
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory
+import com.mapbox.mapboxsdk.style.layers.PropertyFactory.*
+import com.mapbox.mapboxsdk.style.layers.RasterLayer
+import com.mapbox.mapboxsdk.style.layers.SymbolLayer
+import com.mapbox.mapboxsdk.style.sources.GeoJsonSource
+import com.mapbox.mapboxsdk.style.sources.ImageSource
 import com.nuivras.sarviun.BR
 import com.nuivras.sarviun.R
 import com.nuivras.sarviun.databinding.FragmentSearchDetailBinding
@@ -36,12 +54,12 @@ import kotlinx.android.synthetic.main.fragment_search_detail.*
 import kotlin.math.roundToInt
 
 
-class SearchDetailFragment : Fragment() {
+class SearchDetailFragment : Fragment(), PermissionsListener {
 
     lateinit var coordinates : String
     lateinit var mapIntent : Intent
-    private lateinit var fusedLocationClient: FusedLocationProviderClient
-    lateinit var requestPermissionLauncher : ActivityResultLauncher<String>
+    lateinit var mMapboxMap: MapboxMap
+    private var permissionsManager: PermissionsManager = PermissionsManager(this)
 
     /**
      * Lazily initialize our [SearchDetailViewModel].
@@ -58,60 +76,9 @@ class SearchDetailFragment : Fragment() {
 
         }
 
-        // Register the permissions callback, which handles the user's response to the
-        // system permissions dialog. Save the return value, an instance of
-        // ActivityResultLauncher. You can use either a val, as shown in this snippet,
-        // or a lateinit var in your onAttach() or onCreate() method.
-        requestPermissionLauncher =
-            registerForActivityResult(
-                ActivityResultContracts.RequestPermission()
-            ) { isGranted: Boolean ->
-                if (isGranted) {
-                    getLocation()
-                } else {
-                    // Explain to the user that the feature is unavailable because the
-                    // features requires a permission that the user has denied. At the
-                    // same time, respect the user's decision. Don't link to system
-                    // settings in an effort to convince the user to change their
-                    // decision.
-                }
-            }
+        //MapBox init
+        Mapbox.getInstance(requireContext(), getString(R.string.mapbox_access_token))
     }
-
-    override fun onResume() {
-        super.onResume()
-        when {
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.ACCESS_FINE_LOCATION
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                // You can use the API that requires the permission.
-                getLocation()
-            }
-            else -> {
-                // You can directly ask for the permission.
-                // The registered ActivityResultCallback gets the result of this request.
-                requestPermissionLauncher.launch(
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-            }
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    fun getLocation () {
-        //location acquiring
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        fusedLocationClient.lastLocation
-            .addOnSuccessListener { location: Location? ->
-                // Got last known location. In some rare situations this can be null.
-                Toast.makeText(requireContext(), "jooooooooo", Toast.LENGTH_LONG).show()
-                webView.loadUrl(
-                    "javascript:centerToCurrentLocation(" + location?.latitude + ", " +
-                            location?.longitude + ", " + location?.accuracy + ") "
-                )
-            }
-    }
-
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_search_detail, menu)
@@ -154,16 +121,81 @@ class SearchDetailFragment : Fragment() {
         val binding = FragmentSearchDetailBinding.inflate(inflater)
         binding.lifecycleOwner = this
         setHasOptionsMenu(true)
-        //enables javascript in webview
-        binding.webView.settings.javaScriptEnabled = true
 
-        //loads sample html
-        binding.webView.loadUrl("file:///android_asset/map.html")
+        //mapbox
+        binding.mapView.onCreate(savedInstanceState)
+        binding.mapView.getMapAsync { mapboxMap ->
+            mMapboxMap = mapboxMap
+
+            //listeners
+            mapboxMap.addOnCameraMoveStartedListener(object : MapboxMap.OnCameraMoveStartedListener {
+
+                private val REASONS = arrayOf("REASON_API_GESTURE", "REASON_DEVELOPER_ANIMATION", "REASON_API_ANIMATION")
+
+                override fun onCameraMoveStarted(reason: Int) {
+                    //Toast.makeText(context, String.format("OnCameraMoveStarted: %s", REASONS[reason - 1]), Toast.LENGTH_SHORT/2).show()
+                }
+            })
+
+            mapboxMap.addOnCameraMoveListener {
+                //Toast.makeText(context, "onCameraMove", Toast.LENGTH_SHORT/2).show()
+            }
+
+            mapboxMap.addOnCameraMoveCancelListener {
+                //Toast.makeText(context, "onCameraMoveCanceled", Toast.LENGTH_SHORT/2).show()
+            }
+
+            mapboxMap.addOnCameraIdleListener {
+                val latLngBoundsZoom = mapboxMap.getLatLngBoundsZoomFromCamera(mapboxMap.cameraPosition)
+                //if (gridingOn)
+                viewModel.getGrid()
+                //Toast.makeText(context, "onCameraIdle", Toast.LENGTH_SHORT/2 ).show()
+            }
+
+            //show button for katastr grid
+            grid_fab.show()
+
+            //setting style
+            mapboxMap.setStyle(Style.MAPBOX_STREETS) {
+                // Map is set up and the style has loaded. Now you can add data or make other map adjustments
+                //nazvy do cestiny
+                val localizationPlugin = LocalizationPlugin(mapView!!, mapboxMap, it)
+                try {
+                    localizationPlugin.matchMapLanguageWithDeviceDefault()
+                } catch (exception: RuntimeException) {
+                }
+                enableLocationComponent(it)
+                arguments?.let { bundle ->
+                    centerMapToSelectedProperty(bundle, mapboxMap, it)
+                    viewModel.getDetails()
+                }
+            }
+        }
+
+        binding.gridFab.setOnClickListener {
+
+            // Set the latitude and longitude values for the image's four corners
+            val quad = LatLngQuad(
+                LatLng(50.972690, 12.308886),
+                LatLng(51.010970, 18.801030),
+                LatLng(48.687850, 18.801490),
+                LatLng(48.673221, 11.969785)
+            )
+
+            // Add an ImageSource to the map
+            mMapboxMap.style?.addSource(ImageSource("ID_IMAGE_SOURCE", quad, R.drawable.export_test))
+
+            // Create a raster layer and use the imageSource's ID as the layer's data. Then add a RasterLayer to the map.
+            val rasterLayer = RasterLayer("ID_IMAGE_LAYER", "ID_IMAGE_SOURCE")
+            //add below water layer
+            mMapboxMap.style?.addLayerBelow(rasterLayer, "water")
+        }
 
         //pokud to neni prvni spusteni, jinak zobraz jen mapu
-        if (arguments != null) {
+        arguments?.let {
+
             val locationProperty =
-                SearchDetailFragmentArgs.fromBundle(requireArguments()).selectedProperty
+                SearchDetailFragmentArgs.fromBundle(it).selectedProperty
 
             val viewModelFactory = SearchDetailViewModelFactory(locationProperty, application)
             binding.viewModel = ViewModelProvider(
@@ -221,21 +253,6 @@ class SearchDetailFragment : Fragment() {
                 }
             }
 
-            binding.webView.webViewClient = object : WebViewClient() {
-                override fun onPageFinished(view: WebView?, url: String?) {
-                    view?.loadUrl(
-                        "javascript:centerToArea(" + locationProperty.feature.attributes.xmin + ", " +
-                                locationProperty.feature.attributes.ymin + ", " +
-                                locationProperty.feature.attributes.xmax + ", " +
-                                locationProperty.feature.attributes.ymax + ", " +
-                                locationProperty.feature.attributes.isPoint + ") "
-                    )
-
-                    super.onPageFinished(view, url)
-                    viewModel.getDetails()
-                }
-            }
-
             binding.coordinateBottomSheet.katastrButton.setOnClickListener {
                 val webpage: Uri =
                     Uri.parse("http://nahlizenidokn.cuzk.cz/MapaIdentifikace.aspx?l=KN&x=${locationProperty.feature.geometry.x.roundToInt()}&y=${locationProperty.feature.geometry.y.roundToInt()}")
@@ -262,6 +279,114 @@ class SearchDetailFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+    private fun centerMapToSelectedProperty(
+        bundle: Bundle,
+        mapboxMap: MapboxMap,
+        style: Style
+    ) {
+        val locationProperty =
+            SearchDetailFragmentArgs.fromBundle(bundle).selectedProperty
+
+        val northeast = LatLng(locationProperty.feature.attributes.ymin,
+            locationProperty.feature.attributes.xmin)
+
+        val southwest = LatLng(locationProperty.feature.attributes.ymax,
+            locationProperty.feature.attributes.xmax)
+
+        val latLngBounds: LatLngBounds = LatLngBounds.Builder()
+            .include(northeast) // Northeast
+            .include(southwest) // Southwest
+            .build()
+
+        if (locationProperty.feature.attributes.isPoint) {
+            mapboxMap.easeCamera(
+                CameraUpdateFactory.newLatLngZoom(latLngBounds.center, 18.0),
+                2500
+            )
+
+            //make marker
+            ContextCompat.getDrawable(requireContext(),R.drawable.ic_place_brown_24dp)?.let {
+                style.addImage("icon-id",
+                    it
+                )
+            }
+
+            style.addSource(GeoJsonSource
+                ("source-id", Feature.fromGeometry(
+                    Point.fromLngLat(
+                        latLngBounds.center.longitude,
+                        latLngBounds.center.latitude
+                    ))))
+
+            style.addLayer(
+                SymbolLayer(
+                    "layer-id",
+                    "source-id"
+                ).withProperties(
+                    iconImage("icon-id"),
+                    iconAllowOverlap(true),
+                    iconIgnorePlacement(true)
+                )
+            )
+        } else {
+            mapboxMap.easeCamera(
+                CameraUpdateFactory.newLatLngBounds(latLngBounds, 0),
+                2500
+            )
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun enableLocationComponent(loadedMapStyle: Style) {
+        // Check if permissions are enabled and if not request
+        if (PermissionsManager.areLocationPermissionsGranted(context)) {
+
+            // Create and customize the LocationComponent's options
+            val customLocationComponentOptions = LocationComponentOptions.builder(requireContext())
+                .trackingGesturesManagement(true)
+                .build()
+
+            val locationComponentActivationOptions = LocationComponentActivationOptions.builder(requireContext(), loadedMapStyle)
+                .locationComponentOptions(customLocationComponentOptions)
+                .build()
+
+            // Get an instance of the LocationComponent and then adjust its settings
+            mMapboxMap.locationComponent.apply {
+
+                // Activate the LocationComponent with options
+                activateLocationComponent(locationComponentActivationOptions)
+
+                // Enable to make the LocationComponent visible
+                isLocationComponentEnabled = true
+
+                // Set the LocationComponent's camera mode
+                cameraMode = CameraMode.TRACKING
+
+                // Set the LocationComponent's render mode
+                renderMode = RenderMode.COMPASS
+            }
+        } else {
+            permissionsManager = PermissionsManager(this)
+            permissionsManager.requestLocationPermissions(activity)
+        }
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+        permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    override fun onExplanationNeeded(permissionsToExplain: List<String>) {
+        Toast.makeText(context, "R.string.user_location_permission_explanation", Toast.LENGTH_LONG).show()
+    }
+
+    override fun onPermissionResult(granted: Boolean) {
+        if (granted) {
+            enableLocationComponent(mMapboxMap.style!!)
+        } else {
+            Toast.makeText(context, "R.string.user_location_permission_not_granted", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun expandInnerLayout(inflater: LayoutInflater, layerId: Int) {
@@ -293,9 +418,74 @@ class SearchDetailFragment : Fragment() {
     }
 
     private fun showObjectPolygon(it: ArrayList<DoubleArray>) {
-        val array = arrayOfNulls<DoubleArray>(it.size)
-        it.toArray(array)
-        webView.loadUrl("javascript:showPolygon(" + array.contentDeepToString() + ") ")
+        drawPolygonToMap(it)
     }
+
+    private fun drawPolygonToMap(arrayList: ArrayList<DoubleArray>) {
+        val routeCoordinates = ArrayList<Point>()
+        for (point in arrayList)
+            routeCoordinates.add(Point.fromLngLat(point[1], point[0]))
+
+        // Create the LineString from the list of coordinates and then make a GeoJSON
+        // FeatureCollection so we can add the line to our map as a layer.
+        mMapboxMap.style?.addSource(
+            GeoJsonSource(
+                "line-source",
+                FeatureCollection.fromFeatures(
+                    arrayOf<Feature>(
+                        Feature.fromGeometry(
+                            LineString.fromLngLats(routeCoordinates)
+                        )
+                    )
+                )
+            )
+        )
+
+        // The layer properties for our line. This is where we make the line dotted, set the
+        // color, etc.
+        mMapboxMap.style?.addLayer(
+            LineLayer("linelayer", "line-source").withProperties(
+                PropertyFactory.lineWidth(2f),
+                PropertyFactory.lineColor(Color.parseColor("#e55e5e"))
+            )
+        )
+    }
+
+    override fun onStart() {
+        super.onStart()
+        mapView?.onStart()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        mapView?.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        mapView?.onPause()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        mapView?.onStop()
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        mapView?.onSaveInstanceState(outState)
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        mapView?.onLowMemory()
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        mapView?.onDestroy()
+    }
+
+
 
 }

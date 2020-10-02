@@ -1,4 +1,7 @@
 <resources>
+
+    <string name="mapbox_access_token">pk.eyJ1Ijoic2FycGl1biIsImEiOiJjazY0em1mMGMweXhpM2tvNDI3N3hzb2V1In0.thHFQTs4iLSzYYY97h3oaw</string>
+
     <string name="app_name">Sarviun</string>
     <string name="hint_type_to_search">Místo</string>
     <string name="search">Hledat..</string>
