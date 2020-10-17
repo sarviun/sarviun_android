@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.transition.TransitionInflater
+import android.util.DisplayMetrics
 import android.view.*
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
@@ -20,7 +21,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
-import com.mapbox.android.gestures.StandardScaleGestureDetector
 import com.mapbox.geojson.Feature
 import com.mapbox.geojson.FeatureCollection
 import com.mapbox.geojson.LineString
@@ -47,12 +47,18 @@ import com.mapbox.mapboxsdk.style.sources.ImageSource
 import com.nuivras.sarviun.BR
 import com.nuivras.sarviun.R
 import com.nuivras.sarviun.databinding.FragmentSearchDetailBinding
+import com.nuivras.sarviun.network.Extent
 import com.nuivras.sarviun.network.Type
+import com.nuivras.sarviun.utils.CoordinatesConvertor
 import kotlinx.android.synthetic.main.bottom_sheet_search_detail.*
 import kotlinx.android.synthetic.main.bottom_sheet_search_detail.view.*
 import kotlinx.android.synthetic.main.fragment_search_detail.*
+import java.net.URI
 import kotlin.math.roundToInt
 
+private const val BASE_RUIAN_PROLIZECI_SLUZBA_URL = "http://ags.cuzk.cz/arcgis/rest/services/RUIAN/Prohlizeci_sluzba_nad_daty_RUIAN/MapServer/export?"
+private const val ID_IMAGE_SOURCE = "ID_IMAGE_SOURCE"
+private const val ID_IMAGE_LAYER = "ID_IMAGE_LAYER"
 
 class SearchDetailFragment : Fragment(), PermissionsListener {
 
@@ -60,6 +66,7 @@ class SearchDetailFragment : Fragment(), PermissionsListener {
     lateinit var mapIntent : Intent
     lateinit var mMapboxMap: MapboxMap
     private var permissionsManager: PermissionsManager = PermissionsManager(this)
+    private var gridingOn: Boolean = false;
 
     /**
      * Lazily initialize our [SearchDetailViewModel].
@@ -146,10 +153,20 @@ class SearchDetailFragment : Fragment(), PermissionsListener {
             }
 
             mapboxMap.addOnCameraIdleListener {
-                val latLngBoundsZoom = mapboxMap.getLatLngBoundsZoomFromCamera(mapboxMap.cameraPosition)
-                //if (gridingOn)
-                viewModel.getGrid()
-                //Toast.makeText(context, "onCameraIdle", Toast.LENGTH_SHORT/2 ).show()
+                if (gridingOn) {
+                    val latLngBoundsZoom = mapboxMap.getLatLngBoundsZoomFromCamera(mapboxMap.cameraPosition)
+
+                    val northEast = latLngBoundsZoom.latLngBounds.northEast
+                    val southWest = latLngBoundsZoom.latLngBounds.southWest
+
+                    //getDPI
+                    val metrics: DisplayMetrics = resources.displayMetrics
+                    val dpi = metrics.densityDpi
+
+                    viewModel.getMapImage(southWest, northEast, mapboxMap.height, mapboxMap.width, dpi)
+                    //a cekame v observeru na vysledek
+
+                }
             }
 
             //show button for katastr grid
@@ -173,22 +190,11 @@ class SearchDetailFragment : Fragment(), PermissionsListener {
         }
 
         binding.gridFab.setOnClickListener {
-
-            // Set the latitude and longitude values for the image's four corners
-            val quad = LatLngQuad(
-                LatLng(50.972690, 12.308886),
-                LatLng(51.010970, 18.801030),
-                LatLng(48.687850, 18.801490),
-                LatLng(48.673221, 11.969785)
-            )
-
-            // Add an ImageSource to the map
-            mMapboxMap.style?.addSource(ImageSource("ID_IMAGE_SOURCE", quad, R.drawable.export_test))
-
-            // Create a raster layer and use the imageSource's ID as the layer's data. Then add a RasterLayer to the map.
-            val rasterLayer = RasterLayer("ID_IMAGE_LAYER", "ID_IMAGE_SOURCE")
-            //add below water layer
-            mMapboxMap.style?.addLayerBelow(rasterLayer, "water")
+            gridingOn = !gridingOn
+            if (gridingOn)
+                binding.gridFab.setImageResource(R.drawable.ic_baseline_grid_off_24)
+            else
+                binding.gridFab.setImageResource(R.drawable.ic_baseline_grid_on_24)
         }
 
         //pokud to neni prvni spusteni, jinak zobraz jen mapu
@@ -276,6 +282,25 @@ class SearchDetailFragment : Fragment(), PermissionsListener {
                 //show dialog
                 mBuilder.show()
             }
+
+            viewModel.propertyMapExport.observe(viewLifecycleOwner, Observer {
+
+                val quad = it.extent?.toLatLngQuad()
+                //get imageSource
+                val imageSource = ImageSource(ID_IMAGE_SOURCE, quad, URI.create(it.href))
+                // Create a raster layer and use the imageSource's ID as the layer's data. Then add a RasterLayer to the map.
+                val rasterLayer = RasterLayer(ID_IMAGE_LAYER, ID_IMAGE_SOURCE)
+
+                //remove old layer and source if exists
+                if (mMapboxMap.style?.layers?.any { it -> it.id == rasterLayer.id }!!) {
+                    mMapboxMap.style?.removeLayer(ID_IMAGE_LAYER)
+                    mMapboxMap.style?.removeSource(ID_IMAGE_SOURCE)
+                }
+
+                mMapboxMap.style?.addSource(imageSource)
+                mMapboxMap.style?.addLayerBelow(rasterLayer, "building-number-label")
+
+            })
         }
 
         return binding.root
@@ -486,6 +511,19 @@ class SearchDetailFragment : Fragment(), PermissionsListener {
         mapView?.onDestroy()
     }
 
+    private fun LatLng.convertToJTSK() : DoubleArray {
+        return CoordinatesConvertor.WGStoJTSK(this.latitude, this.longitude, 245.0)
+    }
+
+    private fun Extent.toLatLngQuad() : LatLngQuad {
+
+        return LatLngQuad(
+            LatLng(this.ymax, this.xmin),
+            LatLng(this.ymax, this.xmax),
+            LatLng(this.ymin, this.xmax),
+            LatLng(this.ymin, this.xmin)
+        )
+    }
 
 
 }

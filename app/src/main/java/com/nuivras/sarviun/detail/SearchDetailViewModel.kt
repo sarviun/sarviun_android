@@ -5,13 +5,15 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.mapbox.mapboxsdk.geometry.LatLng
+import com.mapbox.mapboxsdk.geometry.LatLngQuad
+import com.nuivras.sarviun.network.ExportResponse
 import com.nuivras.sarviun.network.LocationGeneral
 import com.nuivras.sarviun.network.RUIANApi
 import com.nuivras.sarviun.network.Type
 import com.nuivras.sarviun.network.identify.Result
 import com.nuivras.sarviun.search.RUIANApiStatus
 import com.nuivras.sarviun.utils.CoordinatesConvertor
-import com.nuivras.sarviun.utils.Utils
 import kotlinx.coroutines.*
 import java.math.RoundingMode
 import java.text.DecimalFormat
@@ -19,7 +21,6 @@ import java.text.NumberFormat
 import java.util.*
 import kotlin.collections.ArrayList
 import kotlin.math.absoluteValue
-import kotlin.math.roundToInt
 
 
 class SearchDetailViewModel (locationProperty: LocationGeneral, app: Application) :
@@ -56,6 +57,13 @@ class SearchDetailViewModel (locationProperty: LocationGeneral, app: Application
     val coordinates: LiveData<ArrayList<DoubleArray>>
         get() = _coordinates
 
+    // Internally, we use a MutableLiveData, because we will be updating the List of MarsProperty
+    // with new values
+    private val _propertyMapExport = MutableLiveData<ExportResponse>()
+
+    // The external LiveData interface to the property is immutable, so only this class can modify
+    val propertyMapExport: LiveData<ExportResponse>
+        get() = _propertyMapExport
 
     private val _selectedProperty = MutableLiveData<LocationGeneral>()
 
@@ -181,11 +189,37 @@ class SearchDetailViewModel (locationProperty: LocationGeneral, app: Application
         viewModelJob.cancel()
     }
 
-    fun getGrid() {
-        exportMap()
+    fun getMapImage(
+        southWest: LatLng,
+        northEast: LatLng,
+        height: Float,
+        width: Float,
+        dpi: Int
+    ) {
+        val bbox = southWest.longitude.toString() +
+                "," + southWest.latitude.toString() +
+                "," + northEast.longitude.toString() +
+                "," + northEast.latitude.toString()
+
+        val size = "$width,$height"
+
+        export(bbox, size, dpi.toString())
     }
 
-    private fun exportMap() {
+    private fun export(bbox: String, size: String, dpi: String) {
+        coroutineScope.launch {
 
+            try {
+                // this will run on a thread managed by Retrofit
+                val exportResult = RUIANApi.retrofitService
+                    .export(bbox,size,dpi)
+                _propertyMapExport.value = exportResult
+
+            } catch (e: Exception) {
+                //if viewmodeljob is canceled in updateLocationResult,
+                //exception is raising, need to filter the reason of the exception
+
+            }
+        }
     }
 }
