@@ -19,6 +19,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
 import com.mapbox.geojson.Feature
@@ -56,14 +57,13 @@ import kotlinx.android.synthetic.main.fragment_search_detail.*
 import java.net.URI
 import kotlin.math.roundToInt
 
-private const val BASE_RUIAN_PROLIZECI_SLUZBA_URL = "http://ags.cuzk.cz/arcgis/rest/services/RUIAN/Prohlizeci_sluzba_nad_daty_RUIAN/MapServer/export?"
 private const val ID_IMAGE_SOURCE = "ID_IMAGE_SOURCE"
 private const val ID_IMAGE_LAYER = "ID_IMAGE_LAYER"
 
 class SearchDetailFragment : Fragment(), PermissionsListener {
 
-    lateinit var coordinates : String
-    lateinit var mapIntent : Intent
+    lateinit var coordinates: String
+    lateinit var mapIntent: Intent
     lateinit var mMapboxMap: MapboxMap
     private var permissionsManager: PermissionsManager = PermissionsManager(this)
     private var gridingOn: Boolean = false;
@@ -79,7 +79,8 @@ class SearchDetailFragment : Fragment(), PermissionsListener {
         super.onCreate(savedInstanceState)
         //transition effect
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
+            sharedElementEnterTransition =
+                TransitionInflater.from(context).inflateTransition(android.R.transition.move)
 
         }
 
@@ -93,7 +94,7 @@ class SearchDetailFragment : Fragment(), PermissionsListener {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
+        when (item.itemId) {
             R.id.about -> {
                 showAboutAppDialog()
                 return true
@@ -135,9 +136,14 @@ class SearchDetailFragment : Fragment(), PermissionsListener {
             mMapboxMap = mapboxMap
 
             //listeners
-            mapboxMap.addOnCameraMoveStartedListener(object : MapboxMap.OnCameraMoveStartedListener {
+            mapboxMap.addOnCameraMoveStartedListener(object :
+                MapboxMap.OnCameraMoveStartedListener {
 
-                private val REASONS = arrayOf("REASON_API_GESTURE", "REASON_DEVELOPER_ANIMATION", "REASON_API_ANIMATION")
+                private val REASONS = arrayOf(
+                    "REASON_API_GESTURE",
+                    "REASON_DEVELOPER_ANIMATION",
+                    "REASON_API_ANIMATION"
+                )
 
                 override fun onCameraMoveStarted(reason: Int) {
                     //Toast.makeText(context, String.format("OnCameraMoveStarted: %s", REASONS[reason - 1]), Toast.LENGTH_SHORT/2).show()
@@ -154,18 +160,7 @@ class SearchDetailFragment : Fragment(), PermissionsListener {
 
             mapboxMap.addOnCameraIdleListener {
                 if (gridingOn) {
-                    val latLngBoundsZoom = mapboxMap.getLatLngBoundsZoomFromCamera(mapboxMap.cameraPosition)
-
-                    val northEast = latLngBoundsZoom.latLngBounds.northEast
-                    val southWest = latLngBoundsZoom.latLngBounds.southWest
-
-                    //getDPI
-                    val metrics: DisplayMetrics = resources.displayMetrics
-                    val dpi = metrics.densityDpi
-
-                    viewModel.getMapImage(southWest, northEast, mapboxMap.height, mapboxMap.width, dpi)
-                    //a cekame v observeru na vysledek
-
+                    requestForMapExportLayer()
                 }
             }
 
@@ -191,45 +186,78 @@ class SearchDetailFragment : Fragment(), PermissionsListener {
 
         binding.gridFab.setOnClickListener {
             gridingOn = !gridingOn
-            if (gridingOn)
+            if (gridingOn) {
                 binding.gridFab.setImageResource(R.drawable.ic_baseline_grid_off_24)
-            else
+                requestForMapExportLayer()
+            }
+            else {
                 binding.gridFab.setImageResource(R.drawable.ic_baseline_grid_on_24)
+                removeMapExportLayer()
+            }
         }
 
-        //pokud to neni prvni spusteni, jinak zobraz jen mapu
-        arguments?.let {
 
-            val locationProperty =
-                SearchDetailFragmentArgs.fromBundle(it).selectedProperty
+        val locationProperty =
+            if (arguments != null)
+                SearchDetailFragmentArgs.fromBundle(requireArguments()).selectedProperty
+            else null
 
-            val viewModelFactory = SearchDetailViewModelFactory(locationProperty, application)
-            binding.viewModel = ViewModelProvider(
-                this, viewModelFactory
-            ).get(SearchDetailViewModel::class.java)
+        val viewModelFactory = SearchDetailViewModelFactory(locationProperty, application)
+        binding.viewModel = ViewModelProvider(
+            this, viewModelFactory
+        ).get(SearchDetailViewModel::class.java)
 
-            //jestli se stahlo, zobraz to
-            viewModel.propertiesIdentify.observe(viewLifecycleOwner, Observer {
-                if (it.isNotEmpty()) {
-                    detail_info_nested_scroll_view.visibility = View.VISIBLE
+        //jestli se stahlo, zobraz to
+        viewModel.propertiesIdentify.observe(viewLifecycleOwner, Observer {
+            if (it.isNotEmpty()) {
+                detail_info_nested_scroll_view.visibility = View.VISIBLE
+            }
+        })
+
+        //jestli se nestahl stavebni objekt pro adresni misto, zobraz upozorneni
+        viewModel.firstIdentify.observe(viewLifecycleOwner, Observer {
+            if (viewModel.selectedProperty.value?.feature?.attributes?.typeTranslated == Type.ADRESNI_MISTO
+                && it.layerId != 3
+            ) { //stavebni objekt
+                stavebni_objekt_not_found_layout.visibility = View.VISIBLE
+            }
+            expandInnerLayout(inflater, it.layerId)
+        })
+
+        //data stazena, jakmile se naplni prekonvertovany shape s parcelou(ami), zobraz polygon(y) v mape
+        viewModel.polygonsCoordinates.observe(viewLifecycleOwner, Observer {
+            if (it.isNotEmpty())
+                drawPolygonsToMap(it)
+        })
+
+        viewModel.propertyMapExport.observe(viewLifecycleOwner, Observer {
+
+            val quad = it.extent?.toLatLngQuad()
+            //get imageSource
+            val imageSource = ImageSource(ID_IMAGE_SOURCE, quad, URI.create(it.href))
+            // Create a raster layer and use the imageSource's ID as the layer's data. Then add a RasterLayer to the map.
+            val rasterLayer = RasterLayer(ID_IMAGE_LAYER, ID_IMAGE_SOURCE)
+
+            //remove old layer and source if exists
+            removeMapExportLayer()
+
+            //and add
+            mMapboxMap.style?.addSource(imageSource)
+            mMapboxMap.style?.addLayerBelow(rasterLayer, "building-number-label")
+
+        })
+
+
+        if (locationProperty != null) {
+
+            binding.coordinateBottomSheet.katastrButton.setOnClickListener {
+                val webpage: Uri =
+                    Uri.parse("http://nahlizenidokn.cuzk.cz/MapaIdentifikace.aspx?l=KN&x=${locationProperty.feature.geometry.x.roundToInt()}&y=${locationProperty.feature.geometry.y.roundToInt()}")
+                val intent = Intent(Intent.ACTION_VIEW, webpage)
+                if (intent.resolveActivity(requireActivity().packageManager) != null) {
+                    startActivity(intent)
                 }
-            })
-
-            //jestli se nestahl stavebni objekt pro adresni misto, zobraz upozorneni
-            viewModel.firstIdentify.observe(viewLifecycleOwner, Observer {
-                if (viewModel.selectedProperty.value?.feature?.attributes?.typeTranslated == Type.ADRESNI_MISTO
-                    && it.layerId != 3
-                ) { //stavebni objekt
-                    stavebni_objekt_not_found_layout.visibility = View.VISIBLE
-                }
-                expandInnerLayout(inflater, it.layerId)
-            })
-
-            //data stazena, jakmile se naplni prekonvertovany shape s parcelou, zobraz polygon v mape
-            viewModel.coordinates.observe(viewLifecycleOwner, Observer {
-                if (it.isNotEmpty())
-                    showObjectPolygon(it)
-            })
+            }
 
             if (locationProperty.feature.attributes.isPoint) {
                 val longitude =
@@ -258,49 +286,28 @@ class SearchDetailFragment : Fragment(), PermissionsListener {
                     }
                 }
             }
+        }
 
-            binding.coordinateBottomSheet.katastrButton.setOnClickListener {
-                val webpage: Uri =
-                    Uri.parse("http://nahlizenidokn.cuzk.cz/MapaIdentifikace.aspx?l=KN&x=${locationProperty.feature.geometry.x.roundToInt()}&y=${locationProperty.feature.geometry.y.roundToInt()}")
-                val intent = Intent(Intent.ACTION_VIEW, webpage)
-                if (intent.resolveActivity(requireActivity().packageManager) != null) {
-                    startActivity(intent)
+
+
+        binding.coordinateBottomSheet.emptyDetailButtonExplanation.setOnClickListener {
+            //Inflate the dialog with custom view
+            val mDialogView =
+                layoutInflater.inflate(R.layout.dialog_explanation_adrress_place, null)
+            //AlertDialogBuilder
+            val mBuilder = AlertDialog.Builder(requireContext())
+                .setView(mDialogView)
+                .setTitle(getString(R.string.title_explanation_dialog))
+                .setPositiveButton(android.R.string.ok) { dialog, _ ->
+                    dialog.dismiss()
                 }
-            }
+            //show dialog
+            mBuilder.show()
+        }
 
-            binding.coordinateBottomSheet.emptyDetailButtonExplanation.setOnClickListener {
-                //Inflate the dialog with custom view
-                val mDialogView =
-                    layoutInflater.inflate(R.layout.dialog_explanation_adrress_place, null)
-                //AlertDialogBuilder
-                val mBuilder = AlertDialog.Builder(requireContext())
-                    .setView(mDialogView)
-                    .setTitle(getString(R.string.title_explanation_dialog))
-                    .setPositiveButton(android.R.string.ok) { dialog, _ ->
-                        dialog.dismiss()
-                    }
-                //show dialog
-                mBuilder.show()
-            }
-
-            viewModel.propertyMapExport.observe(viewLifecycleOwner, Observer {
-
-                val quad = it.extent?.toLatLngQuad()
-                //get imageSource
-                val imageSource = ImageSource(ID_IMAGE_SOURCE, quad, URI.create(it.href))
-                // Create a raster layer and use the imageSource's ID as the layer's data. Then add a RasterLayer to the map.
-                val rasterLayer = RasterLayer(ID_IMAGE_LAYER, ID_IMAGE_SOURCE)
-
-                //remove old layer and source if exists
-                if (mMapboxMap.style?.layers?.any { it -> it.id == rasterLayer.id }!!) {
-                    mMapboxMap.style?.removeLayer(ID_IMAGE_LAYER)
-                    mMapboxMap.style?.removeSource(ID_IMAGE_SOURCE)
-                }
-
-                mMapboxMap.style?.addSource(imageSource)
-                mMapboxMap.style?.addLayerBelow(rasterLayer, "building-number-label")
-
-            })
+        if (locationProperty != null) {
+            val behavior = BottomSheetBehavior.from(binding.coordinateBottomSheet.bottom_sheet_behaviour_layout)
+            behavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
 
         return binding.root
@@ -314,11 +321,15 @@ class SearchDetailFragment : Fragment(), PermissionsListener {
         val locationProperty =
             SearchDetailFragmentArgs.fromBundle(bundle).selectedProperty
 
-        val northeast = LatLng(locationProperty.feature.attributes.ymin,
-            locationProperty.feature.attributes.xmin)
+        val northeast = LatLng(
+            locationProperty.feature.attributes.ymin,
+            locationProperty.feature.attributes.xmin
+        )
 
-        val southwest = LatLng(locationProperty.feature.attributes.ymax,
-            locationProperty.feature.attributes.xmax)
+        val southwest = LatLng(
+            locationProperty.feature.attributes.ymax,
+            locationProperty.feature.attributes.xmax
+        )
 
         val latLngBounds: LatLngBounds = LatLngBounds.Builder()
             .include(northeast) // Northeast
@@ -332,18 +343,24 @@ class SearchDetailFragment : Fragment(), PermissionsListener {
             )
 
             //make marker
-            ContextCompat.getDrawable(requireContext(),R.drawable.ic_place_brown_24dp)?.let {
-                style.addImage("icon-id",
+            ContextCompat.getDrawable(requireContext(), R.drawable.ic_place_brown_24dp)?.let {
+                style.addImage(
+                    "icon-id",
                     it
                 )
             }
 
-            style.addSource(GeoJsonSource
-                ("source-id", Feature.fromGeometry(
+            style.addSource(
+                GeoJsonSource
+                    (
+                    "source-id", Feature.fromGeometry(
                     Point.fromLngLat(
                         latLngBounds.center.longitude,
                         latLngBounds.center.latitude
-                    ))))
+                    )
+                )
+                )
+            )
 
             style.addLayer(
                 SymbolLayer(
@@ -373,9 +390,10 @@ class SearchDetailFragment : Fragment(), PermissionsListener {
                 .trackingGesturesManagement(true)
                 .build()
 
-            val locationComponentActivationOptions = LocationComponentActivationOptions.builder(requireContext(), loadedMapStyle)
-                .locationComponentOptions(customLocationComponentOptions)
-                .build()
+            val locationComponentActivationOptions =
+                LocationComponentActivationOptions.builder(requireContext(), loadedMapStyle)
+                    .locationComponentOptions(customLocationComponentOptions)
+                    .build()
 
             // Get an instance of the LocationComponent and then adjust its settings
             mMapboxMap.locationComponent.apply {
@@ -398,19 +416,28 @@ class SearchDetailFragment : Fragment(), PermissionsListener {
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<String>,
+        grantResults: IntArray
+    ) {
         permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     override fun onExplanationNeeded(permissionsToExplain: List<String>) {
-        Toast.makeText(context, "R.string.user_location_permission_explanation", Toast.LENGTH_LONG).show()
+        Toast.makeText(context, "R.string.user_location_permission_explanation", Toast.LENGTH_LONG)
+            .show()
     }
 
     override fun onPermissionResult(granted: Boolean) {
         if (granted) {
             enableLocationComponent(mMapboxMap.style!!)
         } else {
-            Toast.makeText(context, "R.string.user_location_permission_not_granted", Toast.LENGTH_LONG).show()
+            Toast.makeText(
+                context,
+                "R.string.user_location_permission_not_granted",
+                Toast.LENGTH_LONG
+            ).show()
         }
     }
 
@@ -442,14 +469,16 @@ class SearchDetailFragment : Fragment(), PermissionsListener {
         else -> R.layout.detail_stavebni_objekt
     }
 
-    private fun showObjectPolygon(it: ArrayList<DoubleArray>) {
-        drawPolygonToMap(it)
-    }
+    private fun drawPolygonsToMap(arrayList: ArrayList<ArrayList<DoubleArray>>) {
+        val features = arrayListOf<Feature>()
 
-    private fun drawPolygonToMap(arrayList: ArrayList<DoubleArray>) {
-        val routeCoordinates = ArrayList<Point>()
-        for (point in arrayList)
-            routeCoordinates.add(Point.fromLngLat(point[1], point[0]))
+        for (array in arrayList) {
+            val polygonCoordinates = ArrayList<Point>()
+            for (point in array)
+                polygonCoordinates.add(Point.fromLngLat(point[1], point[0]))
+
+            features.add(Feature.fromGeometry(LineString.fromLngLats(polygonCoordinates)))
+        }
 
         // Create the LineString from the list of coordinates and then make a GeoJSON
         // FeatureCollection so we can add the line to our map as a layer.
@@ -457,11 +486,7 @@ class SearchDetailFragment : Fragment(), PermissionsListener {
             GeoJsonSource(
                 "line-source",
                 FeatureCollection.fromFeatures(
-                    arrayOf<Feature>(
-                        Feature.fromGeometry(
-                            LineString.fromLngLats(routeCoordinates)
-                        )
-                    )
+                    features
                 )
             )
         )
@@ -511,18 +536,43 @@ class SearchDetailFragment : Fragment(), PermissionsListener {
         mapView?.onDestroy()
     }
 
-    private fun LatLng.convertToJTSK() : DoubleArray {
-        return CoordinatesConvertor.WGStoJTSK(this.latitude, this.longitude, 245.0)
-    }
-
-    private fun Extent.toLatLngQuad() : LatLngQuad {
+    private fun Extent.toLatLngQuad(): LatLngQuad {
 
         return LatLngQuad(
-            LatLng(this.ymax, this.xmin),
-            LatLng(this.ymax, this.xmax),
-            LatLng(this.ymin, this.xmax),
-            LatLng(this.ymin, this.xmin)
+            LatLng(CoordinatesConvertor.y2lat(this.ymax), CoordinatesConvertor.x2lon(this.xmin)),
+            LatLng(CoordinatesConvertor.y2lat(this.ymax), CoordinatesConvertor.x2lon(this.xmax)),
+            LatLng(CoordinatesConvertor.y2lat(this.ymin), CoordinatesConvertor.x2lon(this.xmax)),
+            LatLng(CoordinatesConvertor.y2lat(this.ymin), CoordinatesConvertor.x2lon(this.xmin))
         )
+    }
+
+    private fun removeMapExportLayer() {
+        //remove old layer and source if exists
+        if (mMapboxMap.style?.layers?.any { it -> it.id == ID_IMAGE_LAYER }!!) {
+            mMapboxMap.style?.removeLayer(ID_IMAGE_LAYER)
+            mMapboxMap.style?.removeSource(ID_IMAGE_SOURCE)
+        }
+    }
+
+    private fun requestForMapExportLayer() {
+        val latLngBoundsZoom =
+            mMapboxMap.getLatLngBoundsZoomFromCamera(mMapboxMap.cameraPosition)
+
+        val northEast = latLngBoundsZoom.latLngBounds.northEast
+        val southWest = latLngBoundsZoom.latLngBounds.southWest
+
+        //getDPI
+        val metrics: DisplayMetrics = resources.displayMetrics
+        val dpi = metrics.densityDpi
+
+        viewModel.getMapImage(
+            southWest,
+            northEast,
+            mMapboxMap.height,
+            mMapboxMap.width,
+            dpi
+        )
+        //a cekame v observeru na vysledek
     }
 
 

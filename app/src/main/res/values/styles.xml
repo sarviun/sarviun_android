@@ -10,6 +10,7 @@
         <item name="colorAccent">@color/colorPrimary</item>
         <!-- proto, aby to nepridavalo navic ikonky a radek, protoze je to v xml MaterialToolbar -->
         <item name="searchViewStyle">@style/Sarviun.SearchViewStyle</item>
+        <item name="android:windowBackground">@drawable/splash_screen_background</item>
 
     </style>
 

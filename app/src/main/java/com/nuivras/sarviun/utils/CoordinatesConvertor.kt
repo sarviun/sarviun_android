@@ -1,5 +1,8 @@
 package com.nuivras.sarviun.utils
 
+import kotlin.math.atan
+import kotlin.math.exp
+
 object CoordinatesConvertor {
     /***
      * Musi byt pozitivni krovak, data prichazi v negativnim
@@ -158,7 +161,7 @@ object CoordinatesConvertor {
 
     /* These functions take their length parameter in meters and return an angle in degrees */
     fun y2lat(aY: Double): Double {
-        return Math.toDegrees(Math.atan(Math.exp(aY / RADIUS)) * 2 - Math.PI / 2)
+        return Math.toDegrees(atan(exp(aY / RADIUS)) * 2 - Math.PI / 2)
     }
 
     fun x2lon(aX: Double): Double {

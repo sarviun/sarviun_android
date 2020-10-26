@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.nuivras.sarviun.network.LocationGeneral
 
-class SearchDetailViewModelFactory(private val location: LocationGeneral,
+class SearchDetailViewModelFactory(private val location: LocationGeneral?,
                                    private val application: Application) : ViewModelProvider.Factory {
     @Suppress("unchecked_cast")
     override fun <T : ViewModel?> create(modelClass: Class<T>): T {

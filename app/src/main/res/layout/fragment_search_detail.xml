@@ -6,6 +6,7 @@
         xmlns:mapbox="http://schemas.android.com/apk/res-auto">
 
     <data>
+        <import type="android.view.View"/>
         <variable
                 name="viewModel"
                 type="com.nuivras.sarviun.detail.SearchDetailViewModel" />
@@ -21,10 +22,10 @@
             android:id="@+id/mapView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            mapbox:mapbox_cameraZoom="18"
-            mapbox:mapbox_uiAttributionMarginBottom="60dp"
-            mapbox:mapbox_uiLogoMarginBottom="60dp"
-            />
+            mapbox:mapbox_cameraZoom="18" />
+<!--            mapbox:mapbox_uiAttributionMarginBottom="60dp"-->
+<!--            mapbox:mapbox_uiLogoMarginBottom="60dp"-->
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:layout_width="wrap_content"
@@ -41,7 +42,8 @@
 
     <include
             layout="@layout/bottom_sheet_search_detail"
-            bind:viewModel="@{viewModel}"/>
+            bind:viewModel="@{viewModel}"
+            android:visibility="@{viewModel.selectedProperty == null ? View.GONE : View.VISIBLE}"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
 

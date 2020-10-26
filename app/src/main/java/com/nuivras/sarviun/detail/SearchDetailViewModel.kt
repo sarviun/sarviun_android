@@ -23,7 +23,7 @@ import kotlin.collections.ArrayList
 import kotlin.math.absoluteValue
 
 
-class SearchDetailViewModel (locationProperty: LocationGeneral, app: Application) :
+class SearchDetailViewModel (locationProperty: LocationGeneral?, app: Application) :
     AndroidViewModel(app) {
 
     // The internal MutableLiveData that stores the status of the most recent request
@@ -51,11 +51,11 @@ class SearchDetailViewModel (locationProperty: LocationGeneral, app: Application
 
     // Internally, we use a MutableLiveData, because we will be updating the List of MarsProperty
     // with new values
-    private val _coordinates = MutableLiveData<ArrayList<DoubleArray>>()
+    private val _polygonsCoordinates = MutableLiveData<ArrayList<ArrayList<DoubleArray>>>()
 
     // The external LiveData interface to the property is immutable, so only this class can modify
-    val coordinates: LiveData<ArrayList<DoubleArray>>
-        get() = _coordinates
+    val polygonsCoordinates: LiveData<ArrayList<ArrayList<DoubleArray>>>
+        get() = _polygonsCoordinates
 
     // Internally, we use a MutableLiveData, because we will be updating the List of MarsProperty
     // with new values
@@ -95,7 +95,12 @@ class SearchDetailViewModel (locationProperty: LocationGeneral, app: Application
                 if (listResult.results.isNotEmpty()) {
                     _firstIdentify.value = _propertiesIdentify.value?.get(0)
                     //transformShape(_firstIdentify.value?.geometry?.rings?.get(0)!!)
-                    _coordinates.value = fetchTransformedCoordinates(_firstIdentify.value?.geometry?.rings?.get(0)!!)
+                    val polygonsGeometries = arrayListOf<ArrayList<DoubleArray>>()
+
+                    for (array in _firstIdentify.value?.geometry?.rings!!)
+                        polygonsGeometries.add(fetchTransformedCoordinates(array))
+
+                    _polygonsCoordinates.value = polygonsGeometries
                 }
 
                 _status.value = RUIANApiStatus.DONE
@@ -132,17 +137,6 @@ class SearchDetailViewModel (locationProperty: LocationGeneral, app: Application
         return "all:$number"
     }
 
-    private fun transformShape(listOfPoints: List<Any>) {
-        val transformedCoordinates = arrayListOf<DoubleArray>()
-        for (point in listOfPoints) {
-            if (point is List<*>) {
-                val pointInDouble: List<Double> = point.filterIsInstance<Double>()
-                transformedCoordinates.add(CoordinatesConvertor.JTSKtoWGS(pointInDouble[1].absoluteValue, pointInDouble[0].absoluteValue, 245.0))
-            }
-        }
-
-        _coordinates.value = transformedCoordinates
-    }
 
     private suspend fun fetchTransformedCoordinates(listOfPoints: List<Any>): ArrayList<DoubleArray> {
         return GlobalScope.async(Dispatchers.Default) {

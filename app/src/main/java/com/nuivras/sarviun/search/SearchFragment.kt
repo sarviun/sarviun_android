@@ -132,6 +132,19 @@ class SearchFragment : Fragment() {
             }
         })
 
+        mSearch.setOnActionExpandListener (
+            object : MenuItem.OnActionExpandListener {
+                override fun onMenuItemActionExpand(p0: MenuItem?): Boolean {
+                    return true
+                }
+
+                override fun onMenuItemActionCollapse(p0: MenuItem?): Boolean {
+                    activity?.supportFragmentManager?.popBackStack()
+                    return true
+                }
+            }
+        )
+
         menu.performIdentifierAction(R.id.search, 0)
         super.onCreateOptionsMenu(menu, inflater)
     }

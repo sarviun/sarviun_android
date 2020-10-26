@@ -39,7 +39,7 @@ interface RUIANService {
                        @Query("size") size: String,
                        @Query("dpi") dpi: String,
                        @Query("bboxSR") bboxSR: String = "4326",
-                       @Query("imageSR") imageSR: String = "4326",
+                       @Query("imageSR") imageSR: String = "3857",
                        @Query("format") format: String = "png",
                        @Query("transparent") transparent: String = "true",
                        @Query("f") f: String = "pjson"): ExportResponse
