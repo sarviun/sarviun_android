@@ -66,7 +66,8 @@ class SearchDetailFragment : Fragment(), PermissionsListener {
     lateinit var mapIntent: Intent
     lateinit var mMapboxMap: MapboxMap
     private var permissionsManager: PermissionsManager = PermissionsManager(this)
-    private var gridingOn: Boolean = false;
+    private var gridingOn: Boolean = false
+    private var isExportStarted: Boolean = false
 
     /**
      * Lazily initialize our [SearchDetailViewModel].
@@ -159,7 +160,8 @@ class SearchDetailFragment : Fragment(), PermissionsListener {
             }
 
             mapboxMap.addOnCameraIdleListener {
-                if (gridingOn) {
+                if (gridingOn && !isExportStarted) {
+                    isExportStarted = true;
                     requestForMapExportLayer()
                 }
             }
@@ -244,6 +246,8 @@ class SearchDetailFragment : Fragment(), PermissionsListener {
             //and add
             mMapboxMap.style?.addSource(imageSource)
             mMapboxMap.style?.addLayerBelow(rasterLayer, "building-number-label")
+
+            isExportStarted = false
 
         })
 
