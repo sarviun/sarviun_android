@@ -15,5 +15,5 @@ data class LocationGeneral(
     val extent: Extent,
     @Json(name = "feature")
     val feature: Feature
-) : Parcelable {
+) : Any(), Parcelable {
 }

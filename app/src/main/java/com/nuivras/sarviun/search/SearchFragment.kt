@@ -2,8 +2,6 @@ package com.nuivras.sarviun.search
 
 import android.os.Build
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import android.transition.TransitionInflater
 import android.view.*
 import android.widget.LinearLayout
@@ -17,6 +15,7 @@ import com.nuivras.sarviun.MainActivity
 import com.nuivras.sarviun.R
 
 import com.nuivras.sarviun.databinding.FragmentSearchBinding
+import com.nuivras.sarviun.databinding.ListAdViewItemBinding
 import com.nuivras.sarviun.network.LocationGeneral
 import com.nuivras.sarviun.utils.Utils
 import kotlinx.android.synthetic.main.list_view_item.view.*
@@ -44,6 +43,7 @@ class SearchFragment : Fragment() {
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         val binding = FragmentSearchBinding.inflate(inflater)
+        val adBinding = ListAdViewItemBinding.inflate(inflater)
 
         // Allows Data Binding to Observe LiveData with the lifecycle of this Fragment
         binding.lifecycleOwner = this
@@ -97,6 +97,14 @@ class SearchFragment : Fragment() {
 
         })
 
+        //ad
+        setAdViewLayout(adBinding)
+        viewModel.nativeAd.observe(viewLifecycleOwner, Observer {
+            if (it != null)
+                adBinding.nativeAddViewRoot.setNativeAd(it)
+        })
+        viewModel.prefetchAd(context)
+
         mTypeToSearchLayout = binding.typeToSearch
         mNotFoundLayout = binding.notFoundLayout
 
@@ -104,6 +112,16 @@ class SearchFragment : Fragment() {
 
         return binding.root
     }
+
+    //nutny zlo
+    private fun setAdViewLayout(binding: ListAdViewItemBinding) {
+        binding.nativeAddViewRoot.headlineView = binding.headline
+        binding.nativeAddViewRoot.bodyView = binding.description
+        binding.nativeAddViewRoot.iconView = binding.imageView2
+        binding.nativeAddViewRoot.callToActionView = binding.action
+        binding.nativeAddViewRoot.advertiserView = binding.advertiser
+    }
+
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_search_detail, menu)
@@ -154,5 +172,10 @@ class SearchFragment : Fragment() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             sharedElementReturnTransition = TransitionInflater.from(context).inflateTransition(android.R.transition.move)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        viewModel.destroyAdd()
     }
 }

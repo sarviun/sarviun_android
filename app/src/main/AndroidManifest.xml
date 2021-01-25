@@ -25,6 +25,9 @@
                 android:foregroundServiceType="location" >
         <!-- Any inner elements would go here. -->
     </service>
+        <meta-data
+                android:name="com.google.android.gms.ads.APPLICATION_ID"
+                android:value="ca-app-pub-6260513641231979~1165586280"/>
     </application>
 
 </manifest>

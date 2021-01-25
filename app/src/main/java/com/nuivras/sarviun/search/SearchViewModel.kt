@@ -1,8 +1,16 @@
 package com.nuivras.sarviun.search
 
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel;
+import com.google.android.gms.ads.AdListener
+import com.google.android.gms.ads.AdLoader
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.LoadAdError
+import com.google.android.gms.ads.nativead.NativeAd
+import com.google.android.gms.ads.nativead.NativeAdOptions
 import com.nuivras.sarviun.network.LocationGeneral
 import com.nuivras.sarviun.network.RUIANApi
 import kotlinx.coroutines.*
@@ -20,11 +28,17 @@ class SearchViewModel : ViewModel() {
 
     // Internally, we use a MutableLiveData, because we will be updating the List of MarsProperty
     // with new values
-    private val _properties = MutableLiveData<List<LocationGeneral>>()
+    private val _properties = MutableLiveData<List<Any>>()
 
     // The external LiveData interface to the property is immutable, so only this class can modify
-    val properties: LiveData<List<LocationGeneral>>
+    val properties: LiveData<List<Any>>
         get() = _properties
+
+    //native google ad
+    private val _nativeAd = MutableLiveData<NativeAd>()
+
+    val nativeAd : LiveData<NativeAd>
+        get() = _nativeAd
 
     // Internally, we use a MutableLiveData to handle navigation to the selected property
     private val _navigateToSelectedProperty = MutableLiveData<LocationGeneral>()
@@ -48,7 +62,14 @@ class SearchViewModel : ViewModel() {
                 val listResult = RUIANApi.retrofitService
                     .find(query)
                 _status.value = RUIANApiStatus.DONE
-                _properties.value = listResult.locations
+
+                val locationWithAd: MutableList<Any>
+                locationWithAd = listResult.locations.toMutableList()
+                //inserting add on the second place in the list if any
+                if (_nativeAd.value != null) {
+                    locationWithAd.add(1, _nativeAd.value!!)
+                }
+                _properties.value = locationWithAd
             } catch (e: Exception) {
                 //if viewmodeljob is canceled in updateLocationResult,
                 //exception is raising, need to filter the reason of the exception
@@ -96,6 +117,36 @@ class SearchViewModel : ViewModel() {
      */
     fun displayPropertyDetailsComplete() {
         _navigateToSelectedProperty.value = null
+    }
+
+    fun prefetchAd(context: Context?) {
+        //ads
+        val adLoader = AdLoader.Builder(context, "ca-app-pub-6260513641231979/8739155673")
+            .forNativeAd { ad : NativeAd ->
+
+                _nativeAd.value = ad
+
+            }
+            .withAdListener(object : AdListener() {
+                override fun onAdFailedToLoad(adError: LoadAdError) {
+                    // Handle the failure by logging, altering the UI, and so on.
+                    Log.e("ads", adError.message)
+                    _nativeAd.value = null
+                }
+            })
+            .withNativeAdOptions(
+                NativeAdOptions.Builder()
+                // Methods in the NativeAdOptions.Builder class can be
+                // used here to specify individual options settings.
+                .setAdChoicesPlacement(NativeAdOptions.ADCHOICES_TOP_RIGHT)
+                .build())
+            .build()
+
+        adLoader.loadAd(AdRequest.Builder().build())
+    }
+
+    fun destroyAdd() {
+        _nativeAd.value?.destroy()
     }
 
 }
