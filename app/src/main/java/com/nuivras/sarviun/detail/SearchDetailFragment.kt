@@ -11,6 +11,7 @@ import android.transition.TransitionInflater
 import android.util.DisplayMetrics
 import android.view.*
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
@@ -60,14 +61,30 @@ import kotlin.math.roundToInt
 private const val ID_IMAGE_SOURCE = "ID_IMAGE_SOURCE"
 private const val ID_IMAGE_LAYER = "ID_IMAGE_LAYER"
 
-class SearchDetailFragment : Fragment(), PermissionsListener {
+class SearchDetailFragment : Fragment() {
 
     lateinit var coordinates: String
     lateinit var mapIntent: Intent
     lateinit var mMapboxMap: MapboxMap
-    private var permissionsManager: PermissionsManager = PermissionsManager(this)
     private var gridingOn: Boolean = false
     private var isExportStarted: Boolean = false
+
+    /**
+     * Init new permission aksing
+     */
+    private val requestPermission = registerForActivityResult(ActivityResultContracts.RequestPermission()) {
+            isGranted ->
+
+                if (isGranted) {
+                    enableLocationComponent(mMapboxMap.style!!)
+                } else {
+                    Toast.makeText(
+                        context,
+                        "R.string.user_location_permission_not_granted",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+    }
 
     /**
      * Lazily initialize our [SearchDetailViewModel].
@@ -415,35 +432,12 @@ class SearchDetailFragment : Fragment(), PermissionsListener {
                 renderMode = RenderMode.COMPASS
             }
         } else {
-            permissionsManager = PermissionsManager(this)
-            permissionsManager.requestLocationPermissions(activity)
+            requestPermission.launch(android.Manifest.permission.ACCESS_FINE_LOCATION)
         }
     }
 
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<String>,
-        grantResults: IntArray
-    ) {
-        permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
 
-    override fun onExplanationNeeded(permissionsToExplain: List<String>) {
-        Toast.makeText(context, "R.string.user_location_permission_explanation", Toast.LENGTH_LONG)
-            .show()
-    }
 
-    override fun onPermissionResult(granted: Boolean) {
-        if (granted) {
-            enableLocationComponent(mMapboxMap.style!!)
-        } else {
-            Toast.makeText(
-                context,
-                "R.string.user_location_permission_not_granted",
-                Toast.LENGTH_LONG
-            ).show()
-        }
-    }
 
     private fun expandInnerLayout(inflater: LayoutInflater, layerId: Int) {
         //fintafn pro pridani layoutu i s viewmodelem programove
