@@ -98,11 +98,6 @@ class SearchFragment : Fragment() {
         })
 
         //ad
-        setAdViewLayout(adBinding)
-        viewModel.nativeAd.observe(viewLifecycleOwner, Observer {
-            if (it != null)
-                adBinding.nativeAddViewRoot.setNativeAd(it)
-        })
         viewModel.prefetchAd(context)
 
         mTypeToSearchLayout = binding.typeToSearch

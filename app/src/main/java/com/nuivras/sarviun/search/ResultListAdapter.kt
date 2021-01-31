@@ -48,10 +48,25 @@ class ResultListAdapter(val onClickListener: OnClickListener) : ListAdapter<Any,
     class NativeAdViewHolder(private var binding: ListAdViewItemBinding):
         BaseViewHolder<NativeAd>(binding) {
         override fun bind(nativeAdProperty: NativeAd) {
+            //necessary for ads
+            binding.nativeAddViewRoot.headlineView = binding.headline
+            binding.nativeAddViewRoot.bodyView = binding.description
+            binding.nativeAddViewRoot.iconView = binding.imageView2
+            binding.nativeAddViewRoot.callToActionView = binding.action
+            binding.nativeAddViewRoot.advertiserView = binding.advertiser
+            // end necessary for ads
+
             binding.property = nativeAdProperty
             // This is important, because it forces the data binding to execute immediately,
             // which allows the RecyclerView to make the correct view size measurements
             binding.executePendingBindings()
+        }
+
+        /**
+         * Necessary for ads
+         */
+        fun setAd(it: NativeAd?) {
+            binding.nativeAddViewRoot?.setNativeAd(it)
         }
     }
 
@@ -107,11 +122,15 @@ class ResultListAdapter(val onClickListener: OnClickListener) : ListAdapter<Any,
             when (val item = getItem(position)) {
                 is LocationGeneral -> {
                     (holder as LocationViewHolder).itemView.setOnClickListener {
-                        onClickListener.onClick(item, holder.itemView)
+                        onClickListener.onLocationClick(item, holder.itemView)
                     }
                     holder.bind(item)
                 }
-                is NativeAd -> (holder as NativeAdViewHolder).bind(item)
+                is NativeAd -> {
+                    (holder as NativeAdViewHolder).bind(item)
+                    //must be placed here to detect clicks
+                    holder.setAd(item)
+                }
                 else -> throw IllegalArgumentException()
             }
         }
@@ -121,8 +140,8 @@ class ResultListAdapter(val onClickListener: OnClickListener) : ListAdapter<Any,
          * associated with the current item to the [onClick] function.
          * @param clickListener lambda that will be called with the current [FindResponse.LocationGeneral]
          */
-        class OnClickListener(val clickListener: (location: LocationGeneral, view: View) -> Unit) {
-            fun onClick(location: LocationGeneral, view: View) = clickListener(location, view)
+        class OnClickListener(val clickLocationListener: (location: LocationGeneral, view: View) -> Unit) {
+            fun onLocationClick(location: LocationGeneral, view: View) = clickLocationListener(location, view)
         }
 
 
