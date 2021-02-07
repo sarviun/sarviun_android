@@ -68,6 +68,7 @@ class SearchDetailFragment : Fragment() {
     lateinit var mMapboxMap: MapboxMap
     private var gridingOn: Boolean = false
     private var isExportStarted: Boolean = false
+    private var layerStyleId: String = Style.DARK
 
     /**
      * Init new permission aksing
@@ -186,8 +187,10 @@ class SearchDetailFragment : Fragment() {
             //show button for katastr grid
             grid_fab.show()
 
+            layer_fab.show()
+
             //setting style
-            mapboxMap.setStyle(Style.MAPBOX_STREETS) {
+            mapboxMap.setStyle(layerStyleId) {
                 // Map is set up and the style has loaded. Now you can add data or make other map adjustments
                 //nazvy do cestiny
                 val localizationPlugin = LocalizationPlugin(mapView!!, mapboxMap, it)
@@ -201,6 +204,16 @@ class SearchDetailFragment : Fragment() {
                     viewModel.getDetails()
                 }
             }
+        }
+
+        binding.layerFab.setOnClickListener {
+            layerStyleId = when (layerStyleId) {
+                Style.DARK -> Style.MAPBOX_STREETS
+                Style.MAPBOX_STREETS -> Style.SATELLITE
+                else -> Style.DARK
+            }
+
+            mMapboxMap.setStyle(layerStyleId)
         }
 
         binding.gridFab.setOnClickListener {

@@ -31,6 +31,19 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end|bottom"
+            android:layout_marginBottom="146dp"
+            android:layout_marginEnd="10dp"
+            android:src="@drawable/ic_baseline_layers_24"
+            bind:backgroundTint="@color/colorPrimary"
+            android:id="@+id/layer_fab"
+            android:visibility="gone"
+            tools:visibility="visible"
+            />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end|bottom"
             android:layout_marginBottom="80dp"
             android:layout_marginEnd="10dp"
             android:src="@drawable/ic_baseline_grid_on_24"
