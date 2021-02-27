@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.google.android.gms.ads.AdRequest
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.mapbox.android.core.permissions.PermissionsListener
 import com.mapbox.android.core.permissions.PermissionsManager
@@ -343,6 +344,10 @@ class SearchDetailFragment : Fragment() {
             val behavior = BottomSheetBehavior.from(binding.coordinateBottomSheet.bottom_sheet_behaviour_layout)
             behavior.state = BottomSheetBehavior.STATE_EXPANDED
         }
+
+        //ad
+        val adRequest = AdRequest.Builder().build()
+        binding.adView.loadAd(adRequest)
 
         return binding.root
     }
