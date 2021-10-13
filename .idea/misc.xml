@@ -5,7 +5,19 @@
       <configuration PROFILE_NAME="Debug" CONFIG_NAME="Debug" />
     </configurations>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="true" project-jdk-name="JDK" project-jdk-type="JavaSDK">
+  <component name="DesignSurface">
+    <option name="filePathToZoomLevelMap">
+      <map>
+        <entry key="..\:/Projects/Sarviun/app/src/main/res/layout/activity_main.xml" value="0.129981884057971" />
+        <entry key="..\:/Projects/Sarviun/app/src/main/res/layout/bottom_sheet_search_detail.xml" value="0.1634963768115942" />
+        <entry key="..\:/Projects/Sarviun/app/src/main/res/layout/fragment_search.xml" value="0.1" />
+        <entry key="..\:/Projects/Sarviun/app/src/main/res/layout/fragment_search_detail.xml" value="0.1" />
+        <entry key="..\:/Projects/Sarviun/app/src/main/res/layout/list_ad_view_item.xml" value="0.2635416666666667" />
+        <entry key="..\:/Projects/Sarviun/app/src/main/res/layout/list_view_item.xml" value="0.2635416666666667" />
+      </map>
+    </option>
+  </component>
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="JDK" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/classes" />
   </component>
 </project>
